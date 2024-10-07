@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,14 +47,50 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="addIngredientForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="addIngredientForm.Designer.cs">
+      <DependentUpon>addIngredientForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="addNewIngredientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="addNewIngredientForm.Designer.cs">
+      <DependentUpon>addNewIngredientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="addRecipeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="addRecipeForm.Designer.cs">
+      <DependentUpon>addRecipeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Malzeme.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="YemekifyDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>YemekifyDataSet.xsd</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="addIngredientForm.resx">
+      <DependentUpon>addIngredientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="addNewIngredientForm.resx">
+      <DependentUpon>addNewIngredientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="addRecipeForm.resx">
+      <DependentUpon>addRecipeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -72,6 +109,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="YemekifyDataSet.xsc">
+      <DependentUpon>YemekifyDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="YemekifyDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>YemekifyDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="YemekifyDataSet.xss">
+      <DependentUpon>YemekifyDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
