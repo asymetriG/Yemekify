@@ -50,8 +50,8 @@ namespace Yemekify
         private void addIngredient_Click(object sender, EventArgs e)
         {
             isPageChanged = true;
-            addIngredientForm addIngredientForm = new addIngredientForm();
-            addIngredientForm.ShowDialog();
+            //addIngredientForm addIngredientForm = new addIngredientForm();
+            //addIngredientForm.ShowDialog();
         }
 
         private void recipeTextBox_TextChanged(object sender, EventArgs e)

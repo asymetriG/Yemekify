@@ -18,12 +18,137 @@ namespace Yemekify
             InitializeComponent();
         }
 
+        bool sidebarExpanded = false;
+        bool tarifCollapse = true;
+        bool depoCollapse = true;
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
 
+        private void sidebarTimer_Tick(object sender, EventArgs e)
+        {
+            if (sidebarExpanded)
+            {
+                sidebarContainer.Width -= 10;
+                if (sidebarContainer.Width == sidebarContainer.MinimumSize.Width)
+                {
+                    sidebarExpanded = false;
+                    sidebarTimer.Stop();
+                }
+            }
+            else
+            {
+                sidebarContainer.Width += 10;
+                if (sidebarContainer.Width == sidebarContainer.MaximumSize.Width)
+                {
+                    sidebarExpanded = true;
+                    sidebarTimer.Stop();
+                }
+            }
+        }
+
+        private void tarifIslemleriTimer_Tick(object sender, EventArgs e)
+        {
+            if (tarifCollapse)
+            {
+                tarifPanel.Height += 10;
+                if (tarifPanel.Height == tarifPanel.MaximumSize.Height)
+                {
+                    tarifCollapse = false;
+                    tarifIslemleriTimer.Stop();
+                }
+            }
+            else
+            {
+                tarifPanel.Height -= 10;
+                if (tarifPanel.Height == tarifPanel.MinimumSize.Height)
+                {
+                    tarifCollapse = true;
+                    tarifIslemleriTimer.Stop();
+                }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            sidebarTimer.Start();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            tarifIslemleriTimer.Start();
+        }
+
+        private void addRecipeButton_Click(object sender, EventArgs e)
+        {
+            addRecipeForm addRecipeForm = new addRecipeForm();
+            addRecipeForm.ShowDialog();
+        }
+
+        private void editRecipeButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void deleteRecipeButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sidebarContainer_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void depotButton_Click(object sender, EventArgs e)
+        {
+            depoIslemleriTimer.Start();
+        }
+
+        private void addIngredientToDepot_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void deleteIngredient_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void viewIngredients_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void depoIslemleriTimer_Tick(object sender, EventArgs e)
+        {
+            if (depoCollapse)
+            {
+                depotPanel.Height += 10;
+                if (depotPanel.Height == depotPanel.MaximumSize.Height)
+                {
+                    depoCollapse = false;
+                    depoIslemleriTimer.Stop();
+                }
+            }
+            else
+            {
+                depotPanel.Height -= 10;
+                if (depotPanel.Height == depotPanel.MinimumSize.Height)
+                {
+                    depoCollapse = true;
+                    depoIslemleriTimer.Stop();
+                }
+            }
+        }
     }
 }
 
