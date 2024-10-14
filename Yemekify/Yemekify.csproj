@@ -47,11 +47,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="addIngredint.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="addIngredint.Designer.cs">
+      <DependentUpon>addIngredint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="addNewIngredient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="addNewIngredient.Designer.cs">
+      <DependentUpon>addNewIngredient.cs</DependentUpon>
+    </Compile>
     <Compile Include="addRecipeForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="addRecipeForm.Designer.cs">
       <DependentUpon>addRecipeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="dummy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dummy.Designer.cs">
+      <DependentUpon>dummy.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -67,8 +85,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>YemekifyDataSet.xsd</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="addIngredint.resx">
+      <DependentUpon>addIngredint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="addNewIngredient.resx">
+      <DependentUpon>addNewIngredient.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="addRecipeForm.resx">
       <DependentUpon>addRecipeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dummy.resx">
+      <DependentUpon>dummy.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -81,6 +108,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -105,6 +133,42 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo-color.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo-black.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo-no-background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plusicon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\substrct.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus-symbol-button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plus-symbol-button %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\substrct %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\plusicon %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\magnifier.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\magnifier 26.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\filter 26.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

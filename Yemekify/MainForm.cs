@@ -23,109 +23,51 @@ namespace Yemekify
         bool depoCollapse = true;
 
 
-        private void Form1_Load(object sender, EventArgs e)
+
+        private void pictureBox1_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void sidebarTimer_Tick(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            if (sidebarExpanded)
-            {
-                sidebarContainer.Width -= 10;
-                if (sidebarContainer.Width == sidebarContainer.MinimumSize.Width)
-                {
-                    sidebarExpanded = false;
-                    sidebarTimer.Stop();
-                }
-            }
-            else
-            {
-                sidebarContainer.Width += 10;
-                if (sidebarContainer.Width == sidebarContainer.MaximumSize.Width)
-                {
-                    sidebarExpanded = true;
-                    sidebarTimer.Stop();
-                }
-            }
+            LoadTarifler();
         }
 
-        private void tarifIslemleriTimer_Tick(object sender, EventArgs e)
+
+
+
+        private void recipeEventsTimer_Tick(object sender, EventArgs e)
         {
             if (tarifCollapse)
             {
-                tarifPanel.Height += 10;
-                if (tarifPanel.Height == tarifPanel.MaximumSize.Height)
+                recipePanel.Height += 10;
+                if (recipePanel.Height == recipePanel.MaximumSize.Height)
                 {
                     tarifCollapse = false;
-                    tarifIslemleriTimer.Stop();
+                    recipeEventsTimer.Stop();
                 }
             }
             else
             {
-                tarifPanel.Height -= 10;
-                if (tarifPanel.Height == tarifPanel.MinimumSize.Height)
+                recipePanel.Height -= 10;
+                if (recipePanel.Height == recipePanel.MinimumSize.Height)
                 {
                     tarifCollapse = true;
-                    tarifIslemleriTimer.Stop();
+                    recipeEventsTimer.Stop();
                 }
             }
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void recipeEventsButton_Click(object sender, EventArgs e)
         {
-            sidebarTimer.Start();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            tarifIslemleriTimer.Start();
+            recipeEventsTimer.Start();
         }
 
         private void addRecipeButton_Click(object sender, EventArgs e)
         {
-            addRecipeForm addRecipeForm = new addRecipeForm();
-            addRecipeForm.ShowDialog();
-        }
-
-        private void editRecipeButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void deleteRecipeButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void sidebarContainer_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void depotButton_Click(object sender, EventArgs e)
-        {
-            depoIslemleriTimer.Start();
-        }
-
-        private void addIngredientToDepot_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void deleteIngredient_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void viewIngredients_Click(object sender, EventArgs e)
-        {
-
+            addRecipeForm a = new addRecipeForm();
+            a.ShowDialog();
         }
 
         private void depoIslemleriTimer_Tick(object sender, EventArgs e)
@@ -148,6 +90,140 @@ namespace Yemekify
                     depoIslemleriTimer.Stop();
                 }
             }
+        }
+
+        private void depotEvents_Click(object sender, EventArgs e)
+        {
+            depoIslemleriTimer.Start();
+        }
+
+        private void LoadTarifler()
+        {
+            // Paneli temizliyoruz
+            recipesPanel.Controls.Clear();
+
+            // FlowLayoutPanel ayarları
+            recipesPanel.AutoScroll = true;  // Panelde kaydırma çubuğu için
+            recipesPanel.FlowDirection = FlowDirection.TopDown;  // Panelleri dikey olarak hizalamak için
+            recipesPanel.WrapContents = false;  // Alt satıra geçmeyi sağlar
+
+            // Örnek tarif verileri (veritabanından gelecek)
+            var tarifler = new List<(int TarifID, string TarifAdi, string Kategori, string HazirlanmaSuresi)>
+    {
+        (1, "Makarna", "Ana Yemek", "20 dakika"),
+        (2, "Pancake", "Tatlı", "15 dakika"),
+        (3, "Tost", "Tatlı","Kurwa"),
+        (3, "Tost", "Tatlı","Kurwa"),
+        (3, "Tost", "Tatlı","Kurwa"),
+        (3, "Tost", "Tatlı","Kurwa"),
+    };
+
+            // Tarifler için dinamik olarak paneller ve içerik ekliyoruz
+            foreach (var tarif in tarifler)
+            {
+                // Her tarif için bir panel oluşturuyoruz
+                Panel tarifPanel = new Panel
+                {
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Height = 100,  // Yükseklik sabit
+                    Padding = new Padding(10),  // İçeriklere boşluk eklemek için padding
+                    AutoSize = false,  // AutoSize'ı false yapıyoruz
+                    Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal // Panelin genişliği ayarlanıyor
+                };
+
+                // Tarif Adı
+                Label tarifAdiLabel = new Label
+                {
+                    Text = $"Tarif: {tarif.TarifAdi}",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                // Kategori
+                Label kategoriLabel = new Label
+                {
+                    Text = $"Kategori: {tarif.Kategori}",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                // Hazırlanma Süresi
+                Label hazirlanmaSuresiLabel = new Label
+                {
+                    Text = $"Hazırlanma Süresi: {tarif.HazirlanmaSuresi}",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                // "Tarifi Göster" butonu
+                Button showRecipeButton = new Button
+                {
+                    Text = "Tarifi Göster",
+                    Tag = tarif.TarifID,  // Tarif ID'yi butonun Tag özelliğine atıyoruz
+                    AutoSize = true,
+                    Height = 40,
+                    Width = 100,
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                };
+                showRecipeButton.Click += ShowRecipeButton_Click; // Butona tıklama olayı ekliyoruz
+
+                // Panelin içine bu öğeleri ekliyoruz
+                tarifPanel.Controls.Add(tarifAdiLabel);
+                tarifPanel.Controls.Add(kategoriLabel);
+                tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
+                tarifPanel.Controls.Add(showRecipeButton);
+
+                // Öğeler arasında boşluk ayarlamak için FlowLayoutPanel veya konum ayarları yapılabilir
+                tarifAdiLabel.Location = new Point(10, 10);
+                kategoriLabel.Location = new Point(10, 40);
+                hazirlanmaSuresiLabel.Location = new Point(10, 70);
+                showRecipeButton.Location = new Point(tarifPanel.Width - 180, 35); // Buton sağda yerleşir
+
+                // Tarif panelini FlowLayoutPanel'e ekliyoruz
+                recipesPanel.Controls.Add(tarifPanel);
+
+                // Panelin genişliği, FlowLayoutPanel genişliği değiştiğinde de otomatik güncellenir
+                recipesPanel.Resize += (s, e) => {
+                    tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
+                };
+            }
+        }
+
+        // "Tarifi Göster" butonuna tıklanınca yapılacak işlemler
+        private void ShowRecipeButton_Click(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            int tarifID = (int)button.Tag; // Tarif ID'yi alıyoruz
+
+            // ShowRecipe formunu açıyoruz ve ilgili tarif ID'yi gönderiyoruz
+            //showRecipe showRecipeForm = new showRecipe(tarifID);
+            //showRecipeForm.Show();
+        }
+
+        private void searchButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void filterButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void addIngredient_Click(object sender, EventArgs e)
+        {
+            addIngredint ai = new addIngredint();
+            ai.Show();
+        }
+
+        private void removeIngredient_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void recipesPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

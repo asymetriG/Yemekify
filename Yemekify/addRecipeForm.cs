@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Yemekify
 {
@@ -18,40 +19,19 @@ namespace Yemekify
             InitializeComponent();
         }
 
-        public static List<Malzeme> ingredients;
+        public static List<Malzeme> allIngredients;
+        public static List<Malzeme> currentIngredients;
 
         private bool isPageChanged = false;
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void recipeName_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void prepareTime_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
-        {
-
-        }
-
-        private void editSelectedIngredientButton_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void addIngredient_Click(object sender, EventArgs e)
         {
             isPageChanged = true;
-            //addIngredientForm addIngredientForm = new addIngredientForm();
-            //addIngredientForm.ShowDialog();
+            addIngredint ai = new addIngredint();
+            ai.Show();
+
         }
 
         private void recipeTextBox_TextChanged(object sender, EventArgs e)
@@ -88,7 +68,7 @@ namespace Yemekify
                         int tarifID = Convert.ToInt32(command.ExecuteScalar());
 
                         // ingredients listesindeki her malzemeyi TarifMalzeme tablosuna ekle ve ToplamMiktar'ı güncelle
-                        foreach (Malzeme malzeme in ingredients)
+                        foreach (Malzeme malzeme in currentIngredients)
                         {
                             // TarifMalzeme tablosuna ekleme
                             string insertIngredientQuery = "INSERT INTO TarifMalzeme (TarifID, MalzemeID, MalzemeMiktar) VALUES (@TarifID, @MalzemeID, @MalzemeMiktar)";
@@ -120,51 +100,161 @@ namespace Yemekify
 
         private void addRecipeForm_Load(object sender, EventArgs e)
         {
-            ingredients = new List<Malzeme>();
+            allIngredients = new List<Malzeme>();
+            currentIngredients = new List<Malzeme>();
+
+            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+            string query = "SELECT MalzemeId, MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat FROM Malzemeler";
+
+            // SqlConnection kullanarak bağlantı oluştur
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    
+                    connection.Open();
+
+                    
+                    SqlCommand command = new SqlCommand(query, connection);
+
+                    
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    
+                    ingredientsGridView.AutoGenerateColumns = false;
+
+                    
+                    ingredientsGridView.Rows.Clear();
+
+                   
+                    while (reader.Read())
+                    {
+                      
+                        int MalzemeId = Convert.ToInt32(reader["MalzemeId"]);
+                        string MalzemeAdi = (string)reader["MalzemeAdi"];
+                        string ToplamMiktar = (string)reader["ToplamMiktar"];
+                        string MalzemeBirim = (string)reader["MalzemeBirim"];
+                        double BirimFiyat = Convert.ToDouble(reader["BirimFiyat"]);
+
+                        Malzeme malzeme = new Malzeme(MalzemeId, MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat);
+                        currentIngredients.Add(malzeme);
+                        allIngredients.Add(malzeme);
+
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Veri çekme sırasında hata: " + ex.Message);
+                }
+            }
+
+            foreach (Malzeme malzeme in currentIngredients)
+            {
+                ingredientsGridView.Rows.Add(malzeme.MalzemeID,malzeme.MalzemeAdi,malzeme.ToplamMiktar,malzeme.MalzemeBirim,malzeme.BirimFiyat);
+            }
         }
        
 
         private void addRecipeForm_MouseClick(object sender, MouseEventArgs e)
         {
-                ingredientsGridView.Rows.Clear();
-                double totalPrice = 0;
-
-                foreach (Malzeme malzeme in ingredients)
-                {
-                    ingredientsGridView.Rows.Add(malzeme.MalzemeID,malzeme.MalzemeAdi, malzeme.ToplamMiktar, malzeme.MalzemeBirim, malzeme.BirimFiyat);
-                    totalPrice += int.Parse(malzeme.ToplamMiktar) * malzeme.BirimFiyat;
-                }
-                totalPriceLabel.Text = "Toplam Maliyet : " + totalPrice.ToString() + " PLN";
-                isPageChanged = false;
-        }
-
-        private void label5_Click(object sender, EventArgs e)
-        {
 
         }
+
 
         private void deleteSelectedIngredient_Click(object sender, EventArgs e)
         {
-            if (ingredientsGridView.SelectedRows.Count > 0)
+            if (addedIngredientsGridView.SelectedRows.Count > 0)
             {
                 
-                int selectedIndex = ingredientsGridView.SelectedRows[0].Index;
+                int selectedIndex = addedIngredientsGridView.SelectedRows[0].Index;
 
                
-                string selectedMalzemeID = ingredientsGridView.SelectedRows[0].Cells["MalzemeID"].Value.ToString();
+                int selectedMalzemeID = Convert.ToInt32(addedIngredientsGridView.SelectedRows[0].Cells["MalzemeID"].Value.ToString());
 
                 
-                var itemToRemove = ingredients.FirstOrDefault(m => m.MalzemeID == selectedMalzemeID);
+                var itemToRemove = allIngredients.FirstOrDefault(m => m.MalzemeID == selectedMalzemeID);
                 if (itemToRemove != null)
                 {
-                    ingredients.Remove(itemToRemove);
-
-                    ingredientsGridView.Rows.RemoveAt(selectedIndex);
+                    addedIngredientsGridView.Rows.RemoveAt(selectedIndex);
                 }
             }
             else
             {
                 MessageBox.Show("Lütfen silmek için bir satır seçin.");
+            }
+        }
+
+        private void addIngredientToDown_Click(object sender, EventArgs e)
+        {
+            
+            if (ingredientsGridView.SelectedRows.Count > 0)
+            {
+                
+                DataGridViewRow selectedRow = ingredientsGridView.SelectedRows[0];
+
+                int malzemeId = Convert.ToInt32(selectedRow.Cells["MalzemeId"].Value);
+                string malzemeAdi = selectedRow.Cells["MalzemeAdi"].Value.ToString();
+                string malzemeBirim = selectedRow.Cells["MalzemeBirim"].Value.ToString();
+                decimal birimFiyat = Convert.ToDecimal(selectedRow.Cells["BirimFiyat"].Value);
+
+                
+                decimal eklenenMiktar = 0;
+                if (!decimal.TryParse(amountTextBox.Text, out eklenenMiktar) || eklenenMiktar <= 0)
+                {
+                    MessageBox.Show("Lütfen geçerli bir miktar girin.");
+                    return;
+                }
+
+                
+                decimal olusanFiyat = eklenenMiktar * birimFiyat;
+                totalPriceLabel.Text = "Toplam Maliyet : " + olusanFiyat + " PLN";
+
+
+
+                addedIngredientsGridView.Rows.Add(malzemeId, malzemeAdi, eklenenMiktar, malzemeBirim, olusanFiyat);
+            }
+            else
+            {
+                MessageBox.Show("Lütfen tarif için eklemek istediğiniz malzemeyi seçin.");
+            }
+        }
+
+
+        private void ingredientSeachBar_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = ingredientSeachBar.Text;
+
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+
+                currentIngredients.Clear();
+                ingredientsGridView.Rows.Clear();
+
+
+                foreach (Malzeme malzeme in allIngredients)
+                {
+
+                    if (malzeme.MalzemeAdi.ToLower().Contains(searchText.ToLower()))
+                    {
+                        currentIngredients.Add(malzeme);
+                    }
+                }
+
+                foreach (Malzeme malzeme1 in currentIngredients)
+                {
+                    ingredientsGridView.Rows.Add(malzeme1.MalzemeID, malzeme1.MalzemeAdi, malzeme1.ToplamMiktar, malzeme1.MalzemeBirim, malzeme1.BirimFiyat);
+                }
+            }
+            else
+            {
+                ingredientsGridView.Rows.Clear();
+                foreach (Malzeme malzeme1 in allIngredients)
+                {
+                    
+                    ingredientsGridView.Rows.Add(malzeme1.MalzemeID, malzeme1.MalzemeAdi, malzeme1.ToplamMiktar, malzeme1.MalzemeBirim, malzeme1.BirimFiyat);
+                }
             }
         }
     }

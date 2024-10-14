@@ -10,13 +10,13 @@ namespace Yemekify
 {
     public class Malzeme
     {
-        public string MalzemeID { get; set; }
+        public int MalzemeID { get; set; }
         public string MalzemeAdi { get; set; }
         public string ToplamMiktar { get; set; }
         public string MalzemeBirim { get; set; }
         public double BirimFiyat { get; set; }
 
-        public Malzeme(string MalzemeID,string MalzemeAdi,string ToplamMiktar,string MalzemeBirim,double BirimFiyat) {
+        public Malzeme(int MalzemeID,string MalzemeAdi,string ToplamMiktar,string MalzemeBirim,double BirimFiyat) {
             this.MalzemeID = MalzemeID;
             this.ToplamMiktar = ToplamMiktar;
             this.BirimFiyat = BirimFiyat;
