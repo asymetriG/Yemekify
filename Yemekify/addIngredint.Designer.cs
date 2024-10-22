@@ -63,6 +63,7 @@
             this.ingredientTextBox.Name = "ingredientTextBox";
             this.ingredientTextBox.Size = new System.Drawing.Size(396, 22);
             this.ingredientTextBox.TabIndex = 1;
+            this.ingredientTextBox.TextChanged += new System.EventHandler(this.ingredientTextBox_TextChanged);
             // 
             // label2
             // 
@@ -136,6 +137,7 @@
             this.ingredientsGridView.Name = "ingredientsGridView";
             this.ingredientsGridView.Size = new System.Drawing.Size(541, 187);
             this.ingredientsGridView.TabIndex = 9;
+            this.ingredientsGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ingredientsGridView_CellContentClick);
             this.ingredientsGridView.SelectionChanged += new System.EventHandler(this.ingredientsGridView_SelectionChanged);
             // 
             // MalzemeId

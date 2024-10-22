@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -67,6 +68,7 @@ namespace Yemekify
         private void addRecipeButton_Click(object sender, EventArgs e)
         {
             addRecipeForm a = new addRecipeForm();
+            a.fromWhere = "fromAddRecipe";
             a.ShowDialog();
         }
 
@@ -97,107 +99,150 @@ namespace Yemekify
             depoIslemleriTimer.Start();
         }
 
+        
+
         private void LoadTarifler()
         {
-            // Paneli temizliyoruz
+            
             recipesPanel.Controls.Clear();
 
-            // FlowLayoutPanel ayarları
-            recipesPanel.AutoScroll = true;  // Panelde kaydırma çubuğu için
-            recipesPanel.FlowDirection = FlowDirection.TopDown;  // Panelleri dikey olarak hizalamak için
-            recipesPanel.WrapContents = false;  // Alt satıra geçmeyi sağlar
+            
+            recipesPanel.AutoScroll = true;  
+            recipesPanel.FlowDirection = FlowDirection.TopDown;  
+            recipesPanel.WrapContents = false;
 
-            // Örnek tarif verileri (veritabanından gelecek)
-            var tarifler = new List<(int TarifID, string TarifAdi, string Kategori, string HazirlanmaSuresi)>
-    {
-        (1, "Makarna", "Ana Yemek", "20 dakika"),
-        (2, "Pancake", "Tatlı", "15 dakika"),
-        (3, "Tost", "Tatlı","Kurwa"),
-        (3, "Tost", "Tatlı","Kurwa"),
-        (3, "Tost", "Tatlı","Kurwa"),
-        (3, "Tost", "Tatlı","Kurwa"),
-    };
 
-            // Tarifler için dinamik olarak paneller ve içerik ekliyoruz
-            foreach (var tarif in tarifler)
+
+            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+            string query = "SELECT * FROM Tarifler";
+
+            
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                // Her tarif için bir panel oluşturuyoruz
-                Panel tarifPanel = new Panel
+                connection.Open();
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
                 {
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Height = 100,  // Yükseklik sabit
-                    Padding = new Padding(10),  // İçeriklere boşluk eklemek için padding
-                    AutoSize = false,  // AutoSize'ı false yapıyoruz
-                    Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal // Panelin genişliği ayarlanıyor
-                };
+                    Panel tarifPanel = new Panel
+                    {
+                        BorderStyle = BorderStyle.FixedSingle,
+                        Height = 140,
+                        Padding = new Padding(10),  
+                        AutoSize = false, 
+                        Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal 
+                    };
 
-                // Tarif Adı
-                Label tarifAdiLabel = new Label
-                {
-                    Text = $"Tarif: {tarif.TarifAdi}",
-                    AutoSize = true,
-                    Font = new Font("Segoe UI", 12)
-                };
+                    
+                    Label tarifAdiLabel = new Label
+                    {
+                        Text = $"Tarif: {reader["TarifAdi"]}",
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 12)
+                    };
 
-                // Kategori
-                Label kategoriLabel = new Label
-                {
-                    Text = $"Kategori: {tarif.Kategori}",
-                    AutoSize = true,
-                    Font = new Font("Segoe UI", 12)
-                };
+                    
+                    Label kategoriLabel = new Label
+                    {
+                        Text = $"Kategori: {reader["Kategori"]}",
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 12)
+                    };
 
-                // Hazırlanma Süresi
-                Label hazirlanmaSuresiLabel = new Label
-                {
-                    Text = $"Hazırlanma Süresi: {tarif.HazirlanmaSuresi}",
-                    AutoSize = true,
-                    Font = new Font("Segoe UI", 12)
-                };
+                    Label hazirlanmaSuresiLabel = new Label
+                    {
+                        Text = $"Hazırlanma Süresi: {reader["HazirlamaSuresi"]} dakika",
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 12)
+                    };
 
-                // "Tarifi Göster" butonu
-                Button showRecipeButton = new Button
-                {
-                    Text = "Tarifi Göster",
-                    Tag = tarif.TarifID,  // Tarif ID'yi butonun Tag özelliğine atıyoruz
-                    AutoSize = true,
-                    Height = 40,
-                    Width = 100,
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
-                };
-                showRecipeButton.Click += ShowRecipeButton_Click; // Butona tıklama olayı ekliyoruz
+                    Label ToplamMaliyetLabel = new Label
+                    {
+                        Text = "Toplam Maliyet: " +  dbengine.getTotalPrice(reader["TarifID"].ToString()) + " PLN",
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 12)
+                    };
 
-                // Panelin içine bu öğeleri ekliyoruz
-                tarifPanel.Controls.Add(tarifAdiLabel);
-                tarifPanel.Controls.Add(kategoriLabel);
-                tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
-                tarifPanel.Controls.Add(showRecipeButton);
 
-                // Öğeler arasında boşluk ayarlamak için FlowLayoutPanel veya konum ayarları yapılabilir
-                tarifAdiLabel.Location = new Point(10, 10);
-                kategoriLabel.Location = new Point(10, 40);
-                hazirlanmaSuresiLabel.Location = new Point(10, 70);
-                showRecipeButton.Location = new Point(tarifPanel.Width - 180, 35); // Buton sağda yerleşir
+                    Button showRecipeButton = new Button
+                    {
+                        Text = "Tarifi Göster",
+                        Tag = reader["TarifID"],  
+                        AutoSize = true,
+                        Height = 40,
+                        Width = 125,
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                    };
 
-                // Tarif panelini FlowLayoutPanel'e ekliyoruz
-                recipesPanel.Controls.Add(tarifPanel);
+                    Button updateRecipeButton = new Button
+                    {
+                        Text = "Tarifi Düzenle",
+                        Tag = reader["TarifID"],
+                        AutoSize = true,
+                        Height = 40,
+                        Width = 100,
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                    };
 
-                // Panelin genişliği, FlowLayoutPanel genişliği değiştiğinde de otomatik güncellenir
-                recipesPanel.Resize += (s, e) => {
-                    tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
-                };
+
+                    showRecipeButton.Click += ShowRecipeButton_Click; 
+                    updateRecipeButton.Click += updateRecipeButton_Click;
+
+                    
+                    tarifPanel.Controls.Add(tarifAdiLabel);
+                    tarifPanel.Controls.Add(kategoriLabel);
+                    tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
+                    tarifPanel.Controls.Add(ToplamMaliyetLabel);
+                    tarifPanel.Controls.Add(showRecipeButton);
+                    tarifPanel.Controls.Add(updateRecipeButton);
+
+                    
+                    tarifAdiLabel.Location = new Point(10, 10);
+                    kategoriLabel.Location = new Point(10, 40);
+                    hazirlanmaSuresiLabel.Location = new Point(10, 70);
+                    ToplamMaliyetLabel.Location = new Point(10, 100);
+                    showRecipeButton.Location = new Point(tarifPanel.Width - 180, 75);
+                    updateRecipeButton.Location = new Point(tarifPanel.Width - 180, 25);
+
+
+                    recipesPanel.Controls.Add(tarifPanel);
+
+                    
+                    recipesPanel.Resize += (s, e) => {
+                        tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
+                    };
+                }
             }
+
+                
+            
         }
 
-        // "Tarifi Göster" butonuna tıklanınca yapılacak işlemler
+        private void updateRecipeButton_Click(object sender, EventArgs e)
+        {
+            Button button = sender as Button;
+            int tarifID = (int)button.Tag;
+
+            addRecipeForm arf = new addRecipeForm();
+            arf.fromWhere = "update";
+            arf.currentTarifId = tarifID.ToString();
+            arf.Show();
+
+
+
+        }
+
         private void ShowRecipeButton_Click(object sender, EventArgs e)
         {
             Button button = sender as Button;
-            int tarifID = (int)button.Tag; // Tarif ID'yi alıyoruz
+            int tarifID = (int)button.Tag;
 
-            // ShowRecipe formunu açıyoruz ve ilgili tarif ID'yi gönderiyoruz
-            //showRecipe showRecipeForm = new showRecipe(tarifID);
-            //showRecipeForm.Show();
+            showRecipeForm srf = new showRecipeForm();
+            srf.TarifID = tarifID.ToString();
+            srf.Show();
         }
 
         private void searchButton_Click(object sender, EventArgs e)
@@ -218,10 +263,16 @@ namespace Yemekify
 
         private void removeIngredient_Click(object sender, EventArgs e)
         {
-
+            removeIngredientForm rif = new removeIngredientForm();
+            rif.Show();
         }
 
         private void recipesPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
@@ -230,6 +281,36 @@ namespace Yemekify
 
 
 /*Random rnd = new Random();
+ * 
+ * 
+ * string newQuery = @"
+                    SELECT SUM(tm.MalzemeMiktar * m.BirimFiyat) AS ToplamMaliyet
+                    FROM TarifMalzeme tm
+                    JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID
+                    WHERE tm.TarifID = @TarifID
+                    GROUP BY tm.TarifID;
+                    ";
+                        SqlCommand newCommand = new SqlCommand(newQuery, connection);
+                        newCommand.Parameters.AddWithValue("@TarifID", reader["TarifID"]);
+
+                        try
+                        {
+                            object result = newCommand.ExecuteScalar();
+
+                            if (result != null)
+                            {
+                                decimal toplamMaliyet = (decimal)result;
+                                MessageBox.Show(""+toplamMaliyet);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Belirtilen tarif için maliyet hesaplanamadı.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }
 
 
 List<string> tarifAdlari = new List<string> { "Spaghetti", "Kek", "Pilav", "Salata", "Pizza" };

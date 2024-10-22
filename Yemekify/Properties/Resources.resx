@@ -118,14 +118,17 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="filter 26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\filter 26.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="plus-symbol-button" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plus-symbol-button.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="plus-symbol-button (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plus-symbol-button (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="substrct" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\substrct.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="logo-no-background" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\logo-no-background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="logo-black" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logo-black.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -145,13 +148,13 @@
   <data name="logo-color" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\logo-color.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="logo-no-background" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\logo-no-background.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="substrct" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\substrct.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="magnifier 26" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\magnifier 26.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="filter 26" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\filter 26.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="selectimg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\selectimg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

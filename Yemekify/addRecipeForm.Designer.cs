@@ -32,7 +32,6 @@
             this.recipeName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.categoryCbox = new System.Windows.Forms.ComboBox();
-            this.prepareTime = new System.Windows.Forms.MaskedTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.ingredientsGridView = new System.Windows.Forms.DataGridView();
             this.MalzemeID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -40,18 +39,17 @@
             this.ToplamMiktar = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MalzemeBirim = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BirimFiyat = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.editSelectedIngredientButton = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.recipeTextBox = new System.Windows.Forms.RichTextBox();
             this.addRecipeButton = new System.Windows.Forms.Button();
             this.totalPriceLabel = new System.Windows.Forms.Label();
             this.deleteSelectedIngredient = new System.Windows.Forms.Button();
             this.addedIngredientsGridView = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.addedMalzemeId = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.addedMalzemeAdi = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.addedEklenenMiktar = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.addedMalzemeBirim = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.addedOlusanFiyat = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.amountTextBox = new System.Windows.Forms.TextBox();
@@ -59,8 +57,13 @@
             this.label7 = new System.Windows.Forms.Label();
             this.ingredientSeachBar = new System.Windows.Forms.TextBox();
             this.typeOfIngredientCbox = new System.Windows.Forms.ComboBox();
+            this.prepareTime = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.selectedImage = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.ingredientsGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.addedIngredientsGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectedImage)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -113,17 +116,6 @@
             this.categoryCbox.Size = new System.Drawing.Size(241, 50);
             this.categoryCbox.TabIndex = 3;
             // 
-            // prepareTime
-            // 
-            this.prepareTime.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.prepareTime.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.prepareTime.Location = new System.Drawing.Point(24, 175);
-            this.prepareTime.Mask = "00000";
-            this.prepareTime.Name = "prepareTime";
-            this.prepareTime.Size = new System.Drawing.Size(279, 50);
-            this.prepareTime.TabIndex = 4;
-            this.prepareTime.ValidatingType = typeof(int);
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -147,9 +139,11 @@
             this.MalzemeBirim,
             this.BirimFiyat});
             this.ingredientsGridView.Location = new System.Drawing.Point(28, 295);
+            this.ingredientsGridView.MultiSelect = false;
             this.ingredientsGridView.Name = "ingredientsGridView";
             this.ingredientsGridView.Size = new System.Drawing.Size(544, 147);
             this.ingredientsGridView.TabIndex = 6;
+            this.ingredientsGridView.SelectionChanged += new System.EventHandler(this.ingredientsGridView_SelectionChanged);
             // 
             // MalzemeID
             // 
@@ -176,17 +170,6 @@
             this.BirimFiyat.HeaderText = "BirimFiyat";
             this.BirimFiyat.Name = "BirimFiyat";
             // 
-            // editSelectedIngredientButton
-            // 
-            this.editSelectedIngredientButton.BackColor = System.Drawing.Color.SkyBlue;
-            this.editSelectedIngredientButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.editSelectedIngredientButton.Location = new System.Drawing.Point(28, 735);
-            this.editSelectedIngredientButton.Name = "editSelectedIngredientButton";
-            this.editSelectedIngredientButton.Size = new System.Drawing.Size(271, 41);
-            this.editSelectedIngredientButton.TabIndex = 7;
-            this.editSelectedIngredientButton.Text = "Seçilen Malzemeyi Düzenle";
-            this.editSelectedIngredientButton.UseVisualStyleBackColor = false;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
@@ -202,10 +185,9 @@
             this.recipeTextBox.BackColor = System.Drawing.Color.LightSteelBlue;
             this.recipeTextBox.Location = new System.Drawing.Point(617, 81);
             this.recipeTextBox.Name = "recipeTextBox";
-            this.recipeTextBox.Size = new System.Drawing.Size(366, 515);
+            this.recipeTextBox.Size = new System.Drawing.Size(366, 201);
             this.recipeTextBox.TabIndex = 10;
             this.recipeTextBox.Text = "";
-            this.recipeTextBox.TextChanged += new System.EventHandler(this.recipeTextBox_TextChanged);
             // 
             // addRecipeButton
             // 
@@ -224,19 +206,20 @@
             this.totalPriceLabel.AutoSize = true;
             this.totalPriceLabel.BackColor = System.Drawing.Color.Transparent;
             this.totalPriceLabel.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.totalPriceLabel.Location = new System.Drawing.Point(642, 640);
+            this.totalPriceLabel.Location = new System.Drawing.Point(683, 640);
             this.totalPriceLabel.Name = "totalPriceLabel";
-            this.totalPriceLabel.Size = new System.Drawing.Size(313, 39);
+            this.totalPriceLabel.Size = new System.Drawing.Size(91, 39);
             this.totalPriceLabel.TabIndex = 12;
-            this.totalPriceLabel.Text = "Toplam Maliyet : 0 PLN";
+            this.totalPriceLabel.Text = "0 PLN";
+            this.totalPriceLabel.Click += new System.EventHandler(this.totalPriceLabel_Click);
             // 
             // deleteSelectedIngredient
             // 
             this.deleteSelectedIngredient.BackColor = System.Drawing.Color.SkyBlue;
             this.deleteSelectedIngredient.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.deleteSelectedIngredient.Location = new System.Drawing.Point(306, 735);
+            this.deleteSelectedIngredient.Location = new System.Drawing.Point(29, 735);
             this.deleteSelectedIngredient.Name = "deleteSelectedIngredient";
-            this.deleteSelectedIngredient.Size = new System.Drawing.Size(268, 41);
+            this.deleteSelectedIngredient.Size = new System.Drawing.Size(544, 41);
             this.deleteSelectedIngredient.TabIndex = 13;
             this.deleteSelectedIngredient.Text = "Seçilen Malzemeyi Sil";
             this.deleteSelectedIngredient.UseVisualStyleBackColor = false;
@@ -249,40 +232,41 @@
             this.addedIngredientsGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
             this.addedIngredientsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.addedIngredientsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1,
-            this.dataGridViewTextBoxColumn2,
-            this.dataGridViewTextBoxColumn3,
-            this.dataGridViewTextBoxColumn4,
-            this.dataGridViewTextBoxColumn5});
-            this.addedIngredientsGridView.Location = new System.Drawing.Point(29, 558);
+            this.addedMalzemeId,
+            this.addedMalzemeAdi,
+            this.addedEklenenMiktar,
+            this.addedMalzemeBirim,
+            this.addedOlusanFiyat});
+            this.addedIngredientsGridView.Location = new System.Drawing.Point(29, 555);
+            this.addedIngredientsGridView.MultiSelect = false;
             this.addedIngredientsGridView.Name = "addedIngredientsGridView";
-            this.addedIngredientsGridView.Size = new System.Drawing.Size(545, 135);
+            this.addedIngredientsGridView.Size = new System.Drawing.Size(543, 138);
             this.addedIngredientsGridView.TabIndex = 15;
             // 
-            // dataGridViewTextBoxColumn1
+            // addedMalzemeId
             // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "MalzemeID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.addedMalzemeId.HeaderText = "MalzemeID";
+            this.addedMalzemeId.Name = "addedMalzemeId";
             // 
-            // dataGridViewTextBoxColumn2
+            // addedMalzemeAdi
             // 
-            this.dataGridViewTextBoxColumn2.HeaderText = "MalzemeAdi";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.addedMalzemeAdi.HeaderText = "MalzemeAdi";
+            this.addedMalzemeAdi.Name = "addedMalzemeAdi";
             // 
-            // dataGridViewTextBoxColumn3
+            // addedEklenenMiktar
             // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Eklenen Miktar";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.addedEklenenMiktar.HeaderText = "Eklenen Miktar";
+            this.addedEklenenMiktar.Name = "addedEklenenMiktar";
             // 
-            // dataGridViewTextBoxColumn4
+            // addedMalzemeBirim
             // 
-            this.dataGridViewTextBoxColumn4.HeaderText = "MalzemeBirim";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.addedMalzemeBirim.HeaderText = "MalzemeBirim";
+            this.addedMalzemeBirim.Name = "addedMalzemeBirim";
             // 
-            // dataGridViewTextBoxColumn5
+            // addedOlusanFiyat
             // 
-            this.dataGridViewTextBoxColumn5.HeaderText = "Oluşan Fiyat";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.addedOlusanFiyat.HeaderText = "Oluşan Fiyat";
+            this.addedOlusanFiyat.Name = "addedOlusanFiyat";
             // 
             // label5
             // 
@@ -354,12 +338,61 @@
             this.typeOfIngredientCbox.Size = new System.Drawing.Size(91, 32);
             this.typeOfIngredientCbox.TabIndex = 23;
             // 
+            // prepareTime
+            // 
+            this.prepareTime.AllowDrop = true;
+            this.prepareTime.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.prepareTime.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.prepareTime.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.prepareTime.Location = new System.Drawing.Point(24, 178);
+            this.prepareTime.Name = "prepareTime";
+            this.prepareTime.Size = new System.Drawing.Size(286, 43);
+            this.prepareTime.TabIndex = 24;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Calibri", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label8.Location = new System.Drawing.Point(696, 295);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(218, 45);
+            this.label8.TabIndex = 26;
+            this.label8.Text = "Resim Seçiniz";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.BackColor = System.Drawing.Color.Transparent;
+            this.label9.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label9.Location = new System.Drawing.Point(683, 601);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(223, 39);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Toplam Maliyet ";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
+            // selectedImage
+            // 
+            this.selectedImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.selectedImage.Image = global::Yemekify.Properties.Resources.selectimg;
+            this.selectedImage.Location = new System.Drawing.Point(690, 353);
+            this.selectedImage.Name = "selectedImage";
+            this.selectedImage.Size = new System.Drawing.Size(233, 231);
+            this.selectedImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.selectedImage.TabIndex = 25;
+            this.selectedImage.TabStop = false;
+            this.selectedImage.Click += new System.EventHandler(this.selectedImage_Click);
+            // 
             // addRecipeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(131)))), ((int)(((byte)(219)))));
             this.ClientSize = new System.Drawing.Size(1003, 788);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.selectedImage);
+            this.Controls.Add(this.prepareTime);
             this.Controls.Add(this.typeOfIngredientCbox);
             this.Controls.Add(this.ingredientSeachBar);
             this.Controls.Add(this.label7);
@@ -373,10 +406,8 @@
             this.Controls.Add(this.addRecipeButton);
             this.Controls.Add(this.recipeTextBox);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.editSelectedIngredientButton);
             this.Controls.Add(this.ingredientsGridView);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.prepareTime);
             this.Controls.Add(this.categoryCbox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.recipeName);
@@ -390,6 +421,7 @@
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.addRecipeForm_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.ingredientsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.addedIngredientsGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectedImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -401,7 +433,6 @@
         private System.Windows.Forms.TextBox recipeName;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox categoryCbox;
-        private System.Windows.Forms.MaskedTextBox prepareTime;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.DataGridView ingredientsGridView;
         private System.Windows.Forms.DataGridViewTextBoxColumn MalzemeID;
@@ -409,7 +440,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ToplamMiktar;
         private System.Windows.Forms.DataGridViewTextBoxColumn MalzemeBirim;
         private System.Windows.Forms.DataGridViewTextBoxColumn BirimFiyat;
-        private System.Windows.Forms.Button editSelectedIngredientButton;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RichTextBox recipeTextBox;
         private System.Windows.Forms.Button addRecipeButton;
@@ -421,12 +451,16 @@
         private System.Windows.Forms.TextBox amountTextBox;
         private System.Windows.Forms.Button addIngredientToDown;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.TextBox ingredientSeachBar;
         private System.Windows.Forms.ComboBox typeOfIngredientCbox;
+        private System.Windows.Forms.TextBox prepareTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn addedMalzemeId;
+        private System.Windows.Forms.DataGridViewTextBoxColumn addedMalzemeAdi;
+        private System.Windows.Forms.DataGridViewTextBoxColumn addedEklenenMiktar;
+        private System.Windows.Forms.DataGridViewTextBoxColumn addedMalzemeBirim;
+        private System.Windows.Forms.DataGridViewTextBoxColumn addedOlusanFiyat;
+        private System.Windows.Forms.PictureBox selectedImage;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
     }
 }
