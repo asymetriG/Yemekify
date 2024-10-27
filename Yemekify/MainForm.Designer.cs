@@ -48,6 +48,9 @@ namespace Yemekify
             this.malzemeyeGoreArama = new System.Windows.Forms.Button();
             this.ingredientsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.topPanel = new System.Windows.Forms.Panel();
+            this.toPrice = new System.Windows.Forms.TextBox();
+            this.fromPrice = new System.Windows.Forms.TextBox();
+            this.priceCheckBox = new System.Windows.Forms.CheckBox();
             this.filterCbox = new System.Windows.Forms.ComboBox();
             this.filterButton = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -258,6 +261,9 @@ namespace Yemekify
             // topPanel
             // 
             this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(238)))), ((int)(((byte)(173)))));
+            this.topPanel.Controls.Add(this.toPrice);
+            this.topPanel.Controls.Add(this.fromPrice);
+            this.topPanel.Controls.Add(this.priceCheckBox);
             this.topPanel.Controls.Add(this.filterCbox);
             this.topPanel.Controls.Add(this.filterButton);
             this.topPanel.Controls.Add(this.label1);
@@ -270,6 +276,33 @@ namespace Yemekify
             this.topPanel.Size = new System.Drawing.Size(767, 134);
             this.topPanel.TabIndex = 1;
             // 
+            // toPrice
+            // 
+            this.toPrice.Location = new System.Drawing.Point(253, 94);
+            this.toPrice.Name = "toPrice";
+            this.toPrice.Size = new System.Drawing.Size(85, 22);
+            this.toPrice.TabIndex = 6;
+            this.toPrice.TextChanged += new System.EventHandler(this.toPrice_TextChanged);
+            // 
+            // fromPrice
+            // 
+            this.fromPrice.Location = new System.Drawing.Point(162, 94);
+            this.fromPrice.Name = "fromPrice";
+            this.fromPrice.Size = new System.Drawing.Size(85, 22);
+            this.fromPrice.TabIndex = 5;
+            // 
+            // priceCheckBox
+            // 
+            this.priceCheckBox.AutoSize = true;
+            this.priceCheckBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.priceCheckBox.Location = new System.Drawing.Point(23, 94);
+            this.priceCheckBox.Name = "priceCheckBox";
+            this.priceCheckBox.Size = new System.Drawing.Size(121, 25);
+            this.priceCheckBox.TabIndex = 4;
+            this.priceCheckBox.Text = "Fiyat Aralığı";
+            this.priceCheckBox.UseVisualStyleBackColor = true;
+            this.priceCheckBox.CheckedChanged += new System.EventHandler(this.priceCheckBox_CheckedChanged);
+            // 
             // filterCbox
             // 
             this.filterCbox.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
@@ -281,7 +314,7 @@ namespace Yemekify
             "İsme Göre (Z-A)",
             "Hazırlama Süresine Göre",
             "Kategoriye Göre"});
-            this.filterCbox.Location = new System.Drawing.Point(477, 43);
+            this.filterCbox.Location = new System.Drawing.Point(457, 43);
             this.filterCbox.Name = "filterCbox";
             this.filterCbox.Size = new System.Drawing.Size(223, 33);
             this.filterCbox.TabIndex = 3;
@@ -291,7 +324,7 @@ namespace Yemekify
             // 
             this.filterButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.filterButton.Image = global::Yemekify.Properties.Resources.filter_26;
-            this.filterButton.Location = new System.Drawing.Point(437, 43);
+            this.filterButton.Location = new System.Drawing.Point(408, 43);
             this.filterButton.Name = "filterButton";
             this.filterButton.Size = new System.Drawing.Size(33, 36);
             this.filterButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -313,9 +346,9 @@ namespace Yemekify
             // 
             this.searchButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.searchButton.Image = global::Yemekify.Properties.Resources.magnifier_26;
-            this.searchButton.Location = new System.Drawing.Point(398, 43);
+            this.searchButton.Location = new System.Drawing.Point(344, 85);
             this.searchButton.Name = "searchButton";
-            this.searchButton.Size = new System.Drawing.Size(33, 36);
+            this.searchButton.Size = new System.Drawing.Size(48, 36);
             this.searchButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.searchButton.TabIndex = 0;
             this.searchButton.TabStop = false;
@@ -391,6 +424,9 @@ namespace Yemekify
         private FlowLayoutPanel ingredientsPanel;
         private Button malzemeyeGoreArama;
         private ComboBox filterCbox;
+        private CheckBox priceCheckBox;
+        private TextBox toPrice;
+        private TextBox fromPrice;
     }
 }
 

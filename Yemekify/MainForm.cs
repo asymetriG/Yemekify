@@ -37,6 +37,8 @@ namespace Yemekify
         private void MainForm_Load(object sender, EventArgs e)
         {
             filterCbox.Visible = false;
+            fromPrice.Enabled = false;
+            toPrice.Enabled = false;
             allRecipes = new List<Tarif>();
             currentRecipes= new List<Tarif>();
             LoadTarifler();
@@ -127,70 +129,7 @@ namespace Yemekify
             }
         }
 
-        /*private void FilterRecipesByIngredients()
-        {
-            currentRecipes.Clear();
-
-            if (selectedIngredients.Count == 0)
-            {
-                // Hiçbir malzeme seçilmemişse tüm tarifleri göster
-                currentRecipes.AddRange(allRecipes);
-                LoadTariflerFromList();
-                return;
-            }
-
-            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-
-                    // Seçilen malzemeleri içeren tarifleri bulmak için SQL sorgusu
-                    string query = $@"
-                SELECT t.TarifID, t.TarifAdi, t.Kategori, t.HazirlamaSuresi, t.Talimatlar, t.TarifResmi
-                FROM Tarifler t
-                JOIN TarifMalzeme tm ON t.TarifID = tm.TarifID
-                JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID
-                WHERE m.MalzemeAdi IN ({string.Join(",", selectedIngredients.Select((_, i) => $"@MalzemeAdi{i}"))})
-                    ";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        // Her malzemeyi parametre olarak ekleyelim
-                        for (int i = 0; i < selectedIngredients.Count; i++)
-                        {
-                            command.Parameters.AddWithValue($"@MalzemeAdi{i}", selectedIngredients[i]);
-                        }
-                        command.Parameters.AddWithValue("@SelectedIngredientsCount", selectedIngredients.Count);
-
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        while (reader.Read())
-                        {
-                            Tarif tarif = new Tarif(
-                                (int)reader["TarifID"],
-                                reader["TarifAdi"].ToString(),
-                                reader["Kategori"].ToString(),
-                                reader["HazirlamaSuresi"].ToString(),
-                                reader["Talimatlar"].ToString(),
-                                reader["TarifResmi"] as byte[]
-                            );
-
-                            currentRecipes.Add(tarif);
-                        }
-                        reader.Close();
-                    }
-
-                    // Seçilen malzemelere uygun tarifleri göster
-                    LoadTariflerFromList();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata: " + ex.Message);
-                }
-            }
-        }*/
+        
 
 
         private void FilterRecipesByIngredients()
@@ -442,8 +381,27 @@ namespace Yemekify
 
         private void searchButton_Click(object sender, EventArgs e)
         {
+            try
+            {
+                float fromPriceText = float.Parse(fromPrice.Text);
+                float toPriceText = float.Parse(toPrice.Text);
 
+                List<Tarif> filteredRecipes = allRecipes.Where(tarif =>
+                {
+                    float totalPrice = float.Parse(dbengine.getTotalPrice(tarif.TarifID.ToString()));
+                    return totalPrice >= fromPriceText && totalPrice <= toPriceText;
+                }).ToList();
+
+
+                currentRecipes = filteredRecipes;
+                LoadTariflerFromList();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Lütfen geçerli bir fiyat aralığı girin.", "Geçersiz Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
+
 
         private void filterButton_Click(object sender, EventArgs e)
         {
@@ -541,6 +499,25 @@ namespace Yemekify
         {
             LoadTarifler();
             LoadIngredientsPanel();
+        }
+
+        private void priceCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(priceCheckBox.Checked)
+            {
+                toPrice.Enabled = true;
+                fromPrice.Enabled = true;
+            }
+            else
+            {
+                toPrice.Enabled = false;
+                fromPrice.Enabled = false;
+            }
+        }
+
+        private void toPrice_TextChanged(object sender, EventArgs e)
+        {
+
         }
 
         /*Fiyata Göre Artan

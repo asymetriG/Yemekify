@@ -79,7 +79,7 @@
             // recipeName
             // 
             this.recipeName.AllowDrop = true;
-            this.recipeName.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.recipeName.BackColor = System.Drawing.Color.Orange;
             this.recipeName.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.recipeName.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.recipeName.Location = new System.Drawing.Point(20, 81);
@@ -99,7 +99,7 @@
             // 
             // categoryCbox
             // 
-            this.categoryCbox.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.categoryCbox.BackColor = System.Drawing.Color.Orange;
             this.categoryCbox.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.categoryCbox.FormattingEnabled = true;
             this.categoryCbox.Items.AddRange(new object[] {
@@ -130,7 +130,7 @@
             // 
             this.ingredientsGridView.AllowUserToResizeColumns = false;
             this.ingredientsGridView.AllowUserToResizeRows = false;
-            this.ingredientsGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
+            this.ingredientsGridView.BackgroundColor = System.Drawing.Color.Orange;
             this.ingredientsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ingredientsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.MalzemeID,
@@ -182,7 +182,7 @@
             // 
             // recipeTextBox
             // 
-            this.recipeTextBox.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.recipeTextBox.BackColor = System.Drawing.Color.Orange;
             this.recipeTextBox.Location = new System.Drawing.Point(617, 81);
             this.recipeTextBox.Name = "recipeTextBox";
             this.recipeTextBox.Size = new System.Drawing.Size(366, 201);
@@ -191,7 +191,7 @@
             // 
             // addRecipeButton
             // 
-            this.addRecipeButton.BackColor = System.Drawing.Color.DarkTurquoise;
+            this.addRecipeButton.BackColor = System.Drawing.Color.DarkOrange;
             this.addRecipeButton.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.addRecipeButton.Location = new System.Drawing.Point(617, 735);
             this.addRecipeButton.Name = "addRecipeButton";
@@ -215,7 +215,7 @@
             // 
             // deleteSelectedIngredient
             // 
-            this.deleteSelectedIngredient.BackColor = System.Drawing.Color.SkyBlue;
+            this.deleteSelectedIngredient.BackColor = System.Drawing.Color.DarkOrange;
             this.deleteSelectedIngredient.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.deleteSelectedIngredient.Location = new System.Drawing.Point(29, 735);
             this.deleteSelectedIngredient.Name = "deleteSelectedIngredient";
@@ -229,7 +229,7 @@
             // 
             this.addedIngredientsGridView.AllowUserToResizeColumns = false;
             this.addedIngredientsGridView.AllowUserToResizeRows = false;
-            this.addedIngredientsGridView.BackgroundColor = System.Drawing.SystemColors.ActiveCaption;
+            this.addedIngredientsGridView.BackgroundColor = System.Drawing.Color.Orange;
             this.addedIngredientsGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.addedIngredientsGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.addedMalzemeId,
@@ -320,7 +320,7 @@
             // ingredientSeachBar
             // 
             this.ingredientSeachBar.AllowDrop = true;
-            this.ingredientSeachBar.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.ingredientSeachBar.BackColor = System.Drawing.Color.Orange;
             this.ingredientSeachBar.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ingredientSeachBar.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.ingredientSeachBar.Location = new System.Drawing.Point(267, 239);
@@ -341,7 +341,7 @@
             // prepareTime
             // 
             this.prepareTime.AllowDrop = true;
-            this.prepareTime.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.prepareTime.BackColor = System.Drawing.Color.Orange;
             this.prepareTime.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.prepareTime.Font = new System.Drawing.Font("Calibri", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.prepareTime.Location = new System.Drawing.Point(24, 178);
@@ -387,7 +387,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(131)))), ((int)(((byte)(219)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(238)))), ((int)(((byte)(173)))));
             this.ClientSize = new System.Drawing.Size(1003, 788);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
