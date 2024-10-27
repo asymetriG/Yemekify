@@ -286,11 +286,11 @@ namespace Yemekify
                 Panel tarifPanel = new Panel
                 {
                     BorderStyle = BorderStyle.FixedSingle,
-                    Height = 140,
+                    Height = 160,
                     Padding = new Padding(10),
                     AutoSize = false,
                     Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal,
-                    BackColor = tarif.HasMissingIngredients ? Color.Red : Color.Green 
+                    BackColor = tarif.HasMissingIngredients ? Color.Red : Color.Green
                 };
 
                 Label tarifAdiLabel = new Label
@@ -314,51 +314,31 @@ namespace Yemekify
                     Font = new Font("Segoe UI", 12)
                 };
 
-                Label ToplamMaliyetLabel = new Label
+                Label toplamMaliyetLabel = new Label
                 {
                     Text = "Toplam Maliyet: " + dbengine.getTotalPrice(tarif.TarifID.ToString()) + " PLN",
                     AutoSize = true,
                     Font = new Font("Segoe UI", 12)
                 };
 
-                Button showRecipeButton = new Button
+                Label matchingPercentageLabel = new Label
                 {
-                    Text = "Tarifi Göster",
-                    Tag = tarif.TarifID,
+                    Text = $"Eşleşme Yüzdesi: {tarif.MatchingPercentage:F2}%", // Yüzdeyi göster
                     AutoSize = true,
-                    Height = 40,
-                    Width = 125,
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 12)
                 };
-
-                
-
-                Button updateRecipeButton = new Button
-                {
-                    Text = "Tarifi Düzenle",
-                    Tag = tarif.TarifID,
-                    AutoSize = true,
-                    Height = 40,
-                    Width = 100,
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
-                };
-
-                showRecipeButton.Click += ShowRecipeButton_Click;
-                updateRecipeButton.Click += updateRecipeButton_Click;
 
                 tarifPanel.Controls.Add(tarifAdiLabel);
                 tarifPanel.Controls.Add(kategoriLabel);
                 tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
-                tarifPanel.Controls.Add(ToplamMaliyetLabel);
-                tarifPanel.Controls.Add(showRecipeButton);
-                tarifPanel.Controls.Add(updateRecipeButton);
+                tarifPanel.Controls.Add(toplamMaliyetLabel);
+                tarifPanel.Controls.Add(matchingPercentageLabel); // Yeni eklenen eşleşme yüzdesi etiketi
 
                 tarifAdiLabel.Location = new Point(10, 10);
                 kategoriLabel.Location = new Point(10, 40);
                 hazirlanmaSuresiLabel.Location = new Point(10, 70);
-                ToplamMaliyetLabel.Location = new Point(10, 100);
-                showRecipeButton.Location = new Point(tarifPanel.Width - 180, 75);
-                updateRecipeButton.Location = new Point(tarifPanel.Width - 180, 25);
+                toplamMaliyetLabel.Location = new Point(10, 100);
+                matchingPercentageLabel.Location = new Point(10, 130); // Yeni eklenen labelin konumu
 
                 recipesPanel.Controls.Add(tarifPanel);
 
@@ -368,6 +348,7 @@ namespace Yemekify
                 };
             }
         }
+
 
 
 
