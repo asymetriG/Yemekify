@@ -135,9 +135,17 @@ namespace Yemekify
                         string malzemeBirim = addedIngredientsGridView.Rows[i].Cells["addedMalzemeBirim"].Value?.ToString() ?? string.Empty;
                         string eklenenMiktarStr = addedIngredientsGridView.Rows[i].Cells["addedEklenenMiktar"].Value?.ToString() ?? string.Empty;
 
+                        MessageBox.Show(malzemeBirim + " " + malzemeId + " " + eklenenMiktarStr);
+
                         if (!string.IsNullOrEmpty(malzemeId) && !string.IsNullOrEmpty(eklenenMiktarStr))
                         {
                             float eklenenMiktar = float.Parse(eklenenMiktarStr);
+                            float eklenenMiktarToBeChecked = eklenenMiktar;
+
+                            if(malzemeBirim.Equals("Mililitre") || malzemeBirim.Equals("Gram"))
+                            {
+                                eklenenMiktarToBeChecked /= 1000;
+                            }
 
                             // ToplamMiktar'ı veritabanından alıyoruz
                             string checkQuantityQuery = "SELECT ToplamMiktar FROM Malzemeler WHERE MalzemeID = @MalzemeID";
@@ -152,17 +160,18 @@ namespace Yemekify
                                 {
                                     float mevcutMiktar = float.Parse(reader["ToplamMiktar"].ToString());
 
-                                    if (eklenenMiktar > mevcutMiktar)
+                                    if (eklenenMiktarToBeChecked > mevcutMiktar)
                                     {
-                                        MessageBox.Show($"Yetersiz stok: {mevcutMiktar} birim mevcut, {eklenenMiktar} birim eklenmek isteniyor.");
+                                        MessageBox.Show($"Yetersiz stok: {mevcutMiktar} birim mevcut, {eklenenMiktarToBeChecked} birim eklenmek isteniyor.");
                                         continue;
                                     }
                                 }
 
-
+                                reader.Close();
                             }
 
-
+                            MessageBox.Show("İlk Section Bitti");
+                            
 
                             string eklenenMiktarToDb = "";
 
@@ -172,14 +181,14 @@ namespace Yemekify
                             }
                             else
                             {
-                                eklenenMiktarToDb = eklenenMiktarStr;
+                                eklenenMiktarToDb = eklenenMiktar.ToString();
                             }
 
                             string insertIngredientQuery = "INSERT INTO TarifMalzeme (TarifID, MalzemeID, MalzemeMiktar) VALUES (@TarifID, @MalzemeID, @MalzemeMiktar)";
-
+                            
                             using (SqlCommand ingredientCommand = new SqlCommand(insertIngredientQuery, connection))
                             {
-                                MessageBox.Show("INSERT");
+                                
                                 ingredientCommand.Parameters.AddWithValue("@TarifID", tarifID);
                                 ingredientCommand.Parameters.AddWithValue("@MalzemeID", malzemeId);
                                 ingredientCommand.Parameters.AddWithValue("@MalzemeMiktar", eklenenMiktarToDb);
@@ -187,21 +196,25 @@ namespace Yemekify
                                 ingredientCommand.ExecuteNonQuery();
                             }
 
+                            MessageBox.Show("İkinci Section Bitti");
+
                             // Eğer malzeme başarılı bir şekilde eklendiyse stoktan düşüyoruz
-                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = ToplamMiktar - @EklenenMiktar WHERE MalzemeID = @MalzemeID";
+                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @EklenenMiktar WHERE MalzemeID = @MalzemeID";
                             using (SqlCommand updateStockCommand = new SqlCommand(updateStockQuery, connection))
                             {
-                                MessageBox.Show("UPDATE");
-                                updateStockCommand.Parameters.AddWithValue("@EklenenMiktar", eklenenMiktar);
+
+                                updateStockCommand.Parameters.AddWithValue("@EklenenMiktar", float.Parse(eklenenMiktarToDb));
                                 updateStockCommand.Parameters.AddWithValue("@MalzemeID", malzemeId);
                                 updateStockCommand.ExecuteNonQuery();
                             }
+
+                            MessageBox.Show("Son Section Bitti");
                         }
                     }
 
                 } catch (Exception ex)
                 {
-
+                    MessageBox.Show("HATA FIRLATILDI : " + ex);
                 }
             }
                 
@@ -380,6 +393,7 @@ namespace Yemekify
                 if (itemToRemove != null)
                 {
                     addedIngredientsGridView.Rows.RemoveAt(selectedIndex);
+                    olusanFiyat -= addedOlusanFiyat;
                     totalPriceLabel.Text = (float.Parse(totalPriceLabel.Text.Replace(" PLN",string.Empty))-addedOlusanFiyat) + " PLN";
                 }
             }
@@ -515,9 +529,9 @@ namespace Yemekify
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            openFileDialog.Filter = "png files(*.png)|*.png";
+            openFileDialog.Filter = "PNG Files (*.png)|*.png|JPEG Files (*.jpg;*.jpeg)|*.jpg;*.jpeg";
 
-            if(openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 imageLocation = openFileDialog.FileName;
                 selectedImage.ImageLocation = imageLocation;

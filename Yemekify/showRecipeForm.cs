@@ -58,12 +58,12 @@ namespace Yemekify
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
-                    ingredientsListBox.Items.Clear(); // Önce listeyi temizle
+                    ingredientsListBox.Items.Clear();
+
 
                     while (reader.Read())
                     {
-                        //MessageBox.Show("dfgdfgs");
-                        
+
                         float miktar = float.Parse(reader["MalzemeMiktar"].ToString()); 
                         string birim = reader["MalzemeBirim"].ToString(); 
                         string malzemeAdi = reader["MalzemeAdi"].ToString(); 
@@ -80,5 +80,88 @@ namespace Yemekify
                 }
             }
         }
+
+        private void removeRecipeButton_Click(object sender, EventArgs e)
+        {
+            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+
+            
+            DialogResult dialogResult = MessageBox.Show("Bu tarifi silmek istediğinize emin misiniz?", "Tarifi Sil", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+
+                        // 1. Tarifte kullanılan malzemeleri al ve stoklarına geri ekle
+                        string selectIngredientsQuery = @"
+                    SELECT tm.MalzemeID, tm.MalzemeMiktar, m.ToplamMiktar
+                    FROM TarifMalzeme tm
+                    JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID
+                    WHERE tm.TarifID = @TarifID;
+                ";
+
+                        using (SqlCommand selectCommand = new SqlCommand(selectIngredientsQuery, connection))
+                        {
+                            selectCommand.Parameters.AddWithValue("@TarifID", TarifID);
+                            SqlDataReader reader = selectCommand.ExecuteReader();
+
+                            while (reader.Read())
+                            {
+                                int malzemeId = Convert.ToInt32(reader["MalzemeID"]);
+                                float malzemeMiktar = float.Parse(reader["MalzemeMiktar"].ToString());
+                                float mevcutMiktar = float.Parse(reader["ToplamMiktar"].ToString());
+
+                                
+                                string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeID = @MalzemeID";
+                                using (SqlCommand updateCommand = new SqlCommand(updateStockQuery, connection))
+                                {
+                                    float yeniMiktar = mevcutMiktar + malzemeMiktar;
+                                    updateCommand.Parameters.AddWithValue("@YeniMiktar", yeniMiktar);
+                                    updateCommand.Parameters.AddWithValue("@MalzemeID", malzemeId);
+
+                                    updateCommand.ExecuteNonQuery();
+                                }
+                            }
+                            reader.Close();
+                        }
+
+                        
+                        string deleteIngredientsQuery = "DELETE FROM TarifMalzeme WHERE TarifID = @TarifID";
+                        using (SqlCommand deleteIngredientsCommand = new SqlCommand(deleteIngredientsQuery, connection))
+                        {
+                            deleteIngredientsCommand.Parameters.AddWithValue("@TarifID", TarifID);
+                            deleteIngredientsCommand.ExecuteNonQuery();
+                        }
+
+                        
+                        string deleteRecipeQuery = "DELETE FROM Tarifler WHERE TarifID = @TarifID";
+                        using (SqlCommand deleteRecipeCommand = new SqlCommand(deleteRecipeQuery, connection))
+                        {
+                            deleteRecipeCommand.Parameters.AddWithValue("@TarifID", TarifID);
+                            deleteRecipeCommand.ExecuteNonQuery();
+                        }
+
+                        
+                        MessageBox.Show("Tarif ve malzemeleri başarıyla silindi. Malzemeler stoğa geri eklendi.");
+
+                        // Formu kapat
+                        this.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Hata: " + ex.Message);
+                    }
+                }
+            }
+            else if (dialogResult == DialogResult.No)
+            {
+                // Kullanıcı silme işlemini iptal etti
+                MessageBox.Show("Silme işlemi iptal edildi.");
+            }
+        }
+
     }
 }

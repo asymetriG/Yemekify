@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Yemekify;
 
 namespace Yemekify
 {
@@ -22,7 +23,10 @@ namespace Yemekify
         bool sidebarExpanded = false;
         bool tarifCollapse = true;
         bool depoCollapse = true;
-
+        public List<Tarif> allRecipes;
+        public List<Tarif> currentRecipes;
+        private List<Malzeme> selectedIngredients = new List<Malzeme>();
+        private List<Malzeme> allIngredients = new List<Malzeme>();
 
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -32,10 +36,181 @@ namespace Yemekify
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            filterCbox.Visible = false;
+            allRecipes = new List<Tarif>();
+            currentRecipes= new List<Tarif>();
             LoadTarifler();
+            LoadIngredientsPanel();
+        }
+
+        private void LoadIngredientsPanel()
+        {
+            // ingredientsPanel'i temizle
+            ingredientsPanel.Controls.Clear();
+
+            // Malzemeler listesinde her bir malzeme için bir Label ekleyelim
+            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+            string query = "SELECT * FROM Malzemeler";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        string malzemeAdi = reader["MalzemeAdi"].ToString();
+                        int MalzemeID = (int)reader["MalzemeID"];
+                        string ToplamMiktar = reader["ToplamMiktar"].ToString();
+                        string MalzemeBirim = reader["MalzemeBirim"].ToString();
+                        double BirimFiyat = double.Parse(reader["BirimFiyat"].ToString());
+
+                        Malzeme malzeme = new Malzeme(MalzemeID, malzemeAdi, ToplamMiktar,MalzemeBirim,BirimFiyat);
+                        allIngredients.Add(malzeme);
+
+                        // Yeni bir Label oluştur ve özelliklerini ayarla
+                        Label malzemeLabel = new Label
+                        {
+                            Text = $"{malzemeAdi}",
+                            AutoSize = true,
+                            Font = new Font("Segoe UI", 10, FontStyle.Regular),
+                            Margin = new Padding(10),
+                            BackColor = Color.FromArgb(255, 238, 173) // İlk arka plan rengi kırmızı
+                        };
+
+                        // Click olayını bağla
+                        malzemeLabel.Click += (s, e) => MalzemeLabel_Click(malzemeLabel);
+
+                        // Label'i ingredientsPanel'e ekle
+                        ingredientsPanel.Controls.Add(malzemeLabel);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
+            }
         }
 
 
+        private void MalzemeLabel_Click(Label clickedLabel)
+        {
+            string malzemeAdi = clickedLabel.Text;
+
+            // Malzeme listesinde label'daki adı kullanarak ilgili malzemeyi bul
+            Malzeme selectedMalzeme = allIngredients.FirstOrDefault(m => m.MalzemeAdi == malzemeAdi);
+
+            if (selectedMalzeme != null)
+            {
+                // Label'in rengini değiştir ve listeye ekle veya çıkar
+                if (clickedLabel.BackColor == Color.FromArgb(255, 238, 173))
+                {
+                    clickedLabel.BackColor = Color.Green;
+                    if (!selectedIngredients.Contains(selectedMalzeme))
+                    {
+                        selectedIngredients.Add(selectedMalzeme);
+                    }
+                }
+                else
+                {
+                    clickedLabel.BackColor = Color.FromArgb(255, 238, 173);
+                    selectedIngredients.Remove(selectedMalzeme);
+                }
+
+                ingredientsPanel.Controls.SetChildIndex(clickedLabel, 0);
+                FilterRecipesByIngredients();
+            }
+        }
+
+        /*private void FilterRecipesByIngredients()
+        {
+            currentRecipes.Clear();
+
+            if (selectedIngredients.Count == 0)
+            {
+                // Hiçbir malzeme seçilmemişse tüm tarifleri göster
+                currentRecipes.AddRange(allRecipes);
+                LoadTariflerFromList();
+                return;
+            }
+
+            string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    // Seçilen malzemeleri içeren tarifleri bulmak için SQL sorgusu
+                    string query = $@"
+                SELECT t.TarifID, t.TarifAdi, t.Kategori, t.HazirlamaSuresi, t.Talimatlar, t.TarifResmi
+                FROM Tarifler t
+                JOIN TarifMalzeme tm ON t.TarifID = tm.TarifID
+                JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID
+                WHERE m.MalzemeAdi IN ({string.Join(",", selectedIngredients.Select((_, i) => $"@MalzemeAdi{i}"))})
+                    ";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Her malzemeyi parametre olarak ekleyelim
+                        for (int i = 0; i < selectedIngredients.Count; i++)
+                        {
+                            command.Parameters.AddWithValue($"@MalzemeAdi{i}", selectedIngredients[i]);
+                        }
+                        command.Parameters.AddWithValue("@SelectedIngredientsCount", selectedIngredients.Count);
+
+                        SqlDataReader reader = command.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            Tarif tarif = new Tarif(
+                                (int)reader["TarifID"],
+                                reader["TarifAdi"].ToString(),
+                                reader["Kategori"].ToString(),
+                                reader["HazirlamaSuresi"].ToString(),
+                                reader["Talimatlar"].ToString(),
+                                reader["TarifResmi"] as byte[]
+                            );
+
+                            currentRecipes.Add(tarif);
+                        }
+                        reader.Close();
+                    }
+
+                    // Seçilen malzemelere uygun tarifleri göster
+                    LoadTariflerFromList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
+            }
+        }*/
+
+
+        private void FilterRecipesByIngredients()
+        {
+            currentRecipes.Clear();
+
+            if (selectedIngredients.Count == 0)
+            {
+                
+                currentRecipes.AddRange(allRecipes);
+                LoadTariflerFromList();
+                return;
+            } else
+            {
+                currentRecipes = dbengine.getRecipeListByIngredients(selectedIngredients);
+            }
+
+
+            LoadTariflerFromList();
+        }
 
 
         private void recipeEventsTimer_Tick(object sender, EventArgs e)
@@ -99,20 +274,106 @@ namespace Yemekify
             depoIslemleriTimer.Start();
         }
 
-        
+        private void LoadTariflerFromList()
+        {
+            recipesPanel.Controls.Clear();
+            recipesPanel.AutoScroll = true;
+            recipesPanel.FlowDirection = FlowDirection.TopDown;
+            recipesPanel.WrapContents = false;
+
+            foreach (Tarif tarif in currentRecipes)
+            {
+                Panel tarifPanel = new Panel
+                {
+                    BorderStyle = BorderStyle.FixedSingle,
+                    Height = 140,
+                    Padding = new Padding(10),
+                    AutoSize = false,
+                    Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal,
+                    BackColor = tarif.HasMissingIngredients ? Color.Red : Color.Green 
+                };
+
+                Label tarifAdiLabel = new Label
+                {
+                    Text = $"Tarif: {tarif.TarifAdi}",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                Label kategoriLabel = new Label
+                {
+                    Text = $"Kategori: {tarif.Kategori}",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                Label hazirlanmaSuresiLabel = new Label
+                {
+                    Text = $"Hazırlanma Süresi: {tarif.HazirlamaSuresi} dakika",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                Label ToplamMaliyetLabel = new Label
+                {
+                    Text = "Toplam Maliyet: " + dbengine.getTotalPrice(tarif.TarifID.ToString()) + " PLN",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                Button showRecipeButton = new Button
+                {
+                    Text = "Tarifi Göster",
+                    Tag = tarif.TarifID,
+                    AutoSize = true,
+                    Height = 40,
+                    Width = 125,
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                };
+
+                
+
+                Button updateRecipeButton = new Button
+                {
+                    Text = "Tarifi Düzenle",
+                    Tag = tarif.TarifID,
+                    AutoSize = true,
+                    Height = 40,
+                    Width = 100,
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
+                };
+
+                showRecipeButton.Click += ShowRecipeButton_Click;
+                updateRecipeButton.Click += updateRecipeButton_Click;
+
+                tarifPanel.Controls.Add(tarifAdiLabel);
+                tarifPanel.Controls.Add(kategoriLabel);
+                tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
+                tarifPanel.Controls.Add(ToplamMaliyetLabel);
+                tarifPanel.Controls.Add(showRecipeButton);
+                tarifPanel.Controls.Add(updateRecipeButton);
+
+                tarifAdiLabel.Location = new Point(10, 10);
+                kategoriLabel.Location = new Point(10, 40);
+                hazirlanmaSuresiLabel.Location = new Point(10, 70);
+                ToplamMaliyetLabel.Location = new Point(10, 100);
+                showRecipeButton.Location = new Point(tarifPanel.Width - 180, 75);
+                updateRecipeButton.Location = new Point(tarifPanel.Width - 180, 25);
+
+                recipesPanel.Controls.Add(tarifPanel);
+
+                recipesPanel.Resize += (s, e) =>
+                {
+                    tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
+                };
+            }
+        }
+
+
 
         private void LoadTarifler()
         {
             
-            recipesPanel.Controls.Clear();
-
-            
-            recipesPanel.AutoScroll = true;  
-            recipesPanel.FlowDirection = FlowDirection.TopDown;  
-            recipesPanel.WrapContents = false;
-
-
-
             string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
             string query = "SELECT * FROM Tarifler";
 
@@ -127,96 +388,16 @@ namespace Yemekify
 
                 while (reader.Read())
                 {
-                    Panel tarifPanel = new Panel
-                    {
-                        BorderStyle = BorderStyle.FixedSingle,
-                        Height = 140,
-                        Padding = new Padding(10),  
-                        AutoSize = false, 
-                        Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal 
-                    };
 
+                    Tarif tarif = new Tarif((int)reader["TarifID"], reader["TarifAdi"].ToString(), reader["Kategori"].ToString(), reader["HazirlamaSuresi"].ToString(), reader["Talimatlar"].ToString(), reader["TarifResmi"] as byte[]);
                     
-                    Label tarifAdiLabel = new Label
-                    {
-                        Text = $"Tarif: {reader["TarifAdi"]}",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 12)
-                    };
-
+                    allRecipes.Add(tarif);
+                    currentRecipes.Add(tarif);
                     
-                    Label kategoriLabel = new Label
-                    {
-                        Text = $"Kategori: {reader["Kategori"]}",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 12)
-                    };
-
-                    Label hazirlanmaSuresiLabel = new Label
-                    {
-                        Text = $"Hazırlanma Süresi: {reader["HazirlamaSuresi"]} dakika",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 12)
-                    };
-
-                    Label ToplamMaliyetLabel = new Label
-                    {
-                        Text = "Toplam Maliyet: " +  dbengine.getTotalPrice(reader["TarifID"].ToString()) + " PLN",
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 12)
-                    };
-
-
-                    Button showRecipeButton = new Button
-                    {
-                        Text = "Tarifi Göster",
-                        Tag = reader["TarifID"],  
-                        AutoSize = true,
-                        Height = 40,
-                        Width = 125,
-                        Font = new Font("Segoe UI", 12, FontStyle.Bold)
-                    };
-
-                    Button updateRecipeButton = new Button
-                    {
-                        Text = "Tarifi Düzenle",
-                        Tag = reader["TarifID"],
-                        AutoSize = true,
-                        Height = 40,
-                        Width = 100,
-                        Font = new Font("Segoe UI", 12, FontStyle.Bold)
-                    };
-
-
-                    showRecipeButton.Click += ShowRecipeButton_Click; 
-                    updateRecipeButton.Click += updateRecipeButton_Click;
-
-                    
-                    tarifPanel.Controls.Add(tarifAdiLabel);
-                    tarifPanel.Controls.Add(kategoriLabel);
-                    tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
-                    tarifPanel.Controls.Add(ToplamMaliyetLabel);
-                    tarifPanel.Controls.Add(showRecipeButton);
-                    tarifPanel.Controls.Add(updateRecipeButton);
-
-                    
-                    tarifAdiLabel.Location = new Point(10, 10);
-                    kategoriLabel.Location = new Point(10, 40);
-                    hazirlanmaSuresiLabel.Location = new Point(10, 70);
-                    ToplamMaliyetLabel.Location = new Point(10, 100);
-                    showRecipeButton.Location = new Point(tarifPanel.Width - 180, 75);
-                    updateRecipeButton.Location = new Point(tarifPanel.Width - 180, 25);
-
-
-                    recipesPanel.Controls.Add(tarifPanel);
-
-                    
-                    recipesPanel.Resize += (s, e) => {
-                        tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
-                    };
                 }
             }
 
+            LoadTariflerFromList();
                 
             
         }
@@ -230,8 +411,6 @@ namespace Yemekify
             arf.fromWhere = "update";
             arf.currentTarifId = tarifID.ToString();
             arf.Show();
-
-
 
         }
 
@@ -252,7 +431,8 @@ namespace Yemekify
 
         private void filterButton_Click(object sender, EventArgs e)
         {
-
+            filterCbox.Visible = true;
+            filterCbox.SelectedIndex = 0;
         }
 
         private void addIngredient_Click(object sender, EventArgs e)
@@ -272,117 +452,81 @@ namespace Yemekify
 
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+    
+
+        private void searchBar_TextChanged(object sender, EventArgs e)
         {
+            string searchText = searchBar.Text;
+
+
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+
+                currentRecipes.Clear();
+
+                foreach (Tarif tarif in allRecipes)
+                {
+
+                    if (tarif.TarifAdi.ToLower().Contains(searchText.ToLower()))
+                    {
+                        currentRecipes.Add(tarif);
+                    }
+                }
+
+            }
+            else
+            {
+                currentRecipes.Clear();
+                foreach (Tarif tarif in allRecipes)
+                {
+                    currentRecipes.Add(tarif);
+                }
+            }
+
+            LoadTariflerFromList();
 
         }
+
+        private void filterCbox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SortRecipes();
+            LoadTariflerFromList();
+        }
+
+        private void SortRecipes()
+        {
+            switch (filterCbox.SelectedItem.ToString())
+            {
+                case "Fiyata Göre Artan":
+                    currentRecipes = currentRecipes.OrderBy(r => float.Parse(dbengine.getTotalPrice(r.TarifID.ToString()))).ToList();
+                    break;
+                case "Fiyata Göre Azalan":
+                    currentRecipes = currentRecipes.OrderByDescending(r => float.Parse(dbengine.getTotalPrice(r.TarifID.ToString()))).ToList();
+                    break;
+                case "İsme Göre(A-Z)":
+                    currentRecipes = currentRecipes.OrderBy(r => r.TarifAdi).ToList();
+                    break;
+                case "İsme Göre(Z-A)":
+                    currentRecipes = currentRecipes.OrderByDescending(r => r.TarifAdi).ToList();
+                    break;
+                case "Kategoriye Göre":
+                    currentRecipes = currentRecipes.OrderBy(r => r.Kategori).ToList();
+                    break;
+                case "Hazırlama Süresine Göre":
+                    currentRecipes = currentRecipes.OrderBy(r => float.Parse(r.HazirlamaSuresi)).ToList();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /*Fiyata Göre Artan
+        Fiyata Göre Azalan
+        İsme Göre(A-Z)
+        İsme Göre(Z-A)
+        Kategoriye Göre*/
     }
 }
 
-
-/*Random rnd = new Random();
- * 
- * 
- * string newQuery = @"
-                    SELECT SUM(tm.MalzemeMiktar * m.BirimFiyat) AS ToplamMaliyet
-                    FROM TarifMalzeme tm
-                    JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID
-                    WHERE tm.TarifID = @TarifID
-                    GROUP BY tm.TarifID;
-                    ";
-                        SqlCommand newCommand = new SqlCommand(newQuery, connection);
-                        newCommand.Parameters.AddWithValue("@TarifID", reader["TarifID"]);
-
-                        try
-                        {
-                            object result = newCommand.ExecuteScalar();
-
-                            if (result != null)
-                            {
-                                decimal toplamMaliyet = (decimal)result;
-                                MessageBox.Show(""+toplamMaliyet);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Belirtilen tarif için maliyet hesaplanamadı.");
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
-
-
-List<string> tarifAdlari = new List<string> { "Spaghetti", "Kek", "Pilav", "Salata", "Pizza" };
-List<string> kategoriler = new List<string> { "Ana Yemek", "Tatlı", "Ara Sıcak", "Salata" };
-
-string randomTarifAdi = tarifAdlari[rnd.Next(tarifAdlari.Count)];
-string randomKategori = kategoriler[rnd.Next(kategoriler.Count)];
-int randomHazirlamaSuresi = rnd.Next(10, 120);
-
-string randomTarifTalimatlar = $"Adım 1: {randomTarifAdi} için malzemeleri hazırla. Adım 2: Talimatları takip et.";
-
-
-List<string> malzemeAdlari = new List<string> { "Un", "Şeker", "Tereyağı", "Süt", "Zeytinyağı" };
-List<string> malzemeBirimleri = new List<string> { "kg", "litre", "gram" };
-
-string randomMalzemeAdi = malzemeAdlari[rnd.Next(malzemeAdlari.Count)];
-string randomMalzemeBirimi = malzemeBirimleri[rnd.Next(malzemeBirimleri.Count)];
-string randomToplamMiktar = $"{rnd.Next(1, 100)} {randomMalzemeBirimi}";
-decimal randomBirimFiyat = Math.Round((decimal)(rnd.NextDouble() * 100), 2);
-
-
-string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
-
-using (SqlConnection connection = new SqlConnection(connectionString))
-{
-    try
-    {
-        int malzemeID;
-        int tarifID;
-        connection.Open();
-
-
-        string insertTarifQuery = "INSERT INTO Tarifler (TarifAdi, Kategori, HazirlamaSuresi, Talimatlar) VALUES (@TarifAdi, @Kategori, @HazirlamaSuresi, @Talimatlar); SELECT SCOPE_IDENTITY();";
-        using (SqlCommand command = new SqlCommand(insertTarifQuery, connection))
-        {
-            command.Parameters.AddWithValue("@TarifAdi", randomTarifAdi);
-            command.Parameters.AddWithValue("@Kategori", randomKategori);
-            command.Parameters.AddWithValue("@HazirlamaSuresi", randomHazirlamaSuresi);
-            command.Parameters.AddWithValue("@Talimatlar", randomTarifTalimatlar);
-
-            tarifID = Convert.ToInt32(command.ExecuteScalar());  // TarifID'yi alıyoruz
-            MessageBox.Show($"Tarif başarıyla kaydedildi. TarifID: {tarifID}");
-        }
-
-        // Rastgele malzeme veritabanına kaydetme
-        string insertMalzemeQuery = "INSERT INTO Malzemeler (MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat) VALUES (@MalzemeAdi, @ToplamMiktar, @MalzemeBirim, @BirimFiyat); SELECT SCOPE_IDENTITY();";
-        using (SqlCommand command = new SqlCommand(insertMalzemeQuery, connection))
-        {
-            command.Parameters.AddWithValue("@MalzemeAdi", randomMalzemeAdi);
-            command.Parameters.AddWithValue("@ToplamMiktar", randomToplamMiktar);
-            command.Parameters.AddWithValue("@MalzemeBirim", randomMalzemeBirimi);
-            command.Parameters.AddWithValue("@BirimFiyat", randomBirimFiyat);
-
-            malzemeID = Convert.ToInt32(command.ExecuteScalar());  // MalzemeID'yi alıyoruz
-            MessageBox.Show($"Malzeme başarıyla kaydedildi. MalzemeID: {malzemeID}");
-        }
-
-        // Tarif-Malzeme ilişki tablosuna kaydetme
-        string insertTarifMalzemeQuery = "INSERT INTO TarifMalzeme (TarifID, MalzemeID, MalzemeMiktar) VALUES (@TarifID, @MalzemeID, @MalzemeMiktar);";
-        using (SqlCommand command = new SqlCommand(insertTarifMalzemeQuery, connection))
-        {
-            command.Parameters.AddWithValue("@TarifID", tarifID);
-            command.Parameters.AddWithValue("@MalzemeID", malzemeID);
-            command.Parameters.AddWithValue("@MalzemeMiktar", rnd.Next(1, 10));  // Rastgele bir malzeme miktarı
-
-            command.ExecuteNonQuery();
-            MessageBox.Show($"Tarif-Malzeme ilişkisi başarıyla kaydedildi.");
-        }
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show("Hata: " + ex.Message);
-    }
-}
-*/
+/**/

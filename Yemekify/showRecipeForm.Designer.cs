@@ -36,6 +36,7 @@
             this.totalPriceLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.recipeInstructionsTextBox = new System.Windows.Forms.RichTextBox();
+            this.removeRecipeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.recipeImagePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -81,7 +82,7 @@
             // 
             this.prepareTimeLabel.AutoSize = true;
             this.prepareTimeLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.prepareTimeLabel.Location = new System.Drawing.Point(12, 501);
+            this.prepareTimeLabel.Location = new System.Drawing.Point(12, 534);
             this.prepareTimeLabel.Name = "prepareTimeLabel";
             this.prepareTimeLabel.Size = new System.Drawing.Size(282, 30);
             this.prepareTimeLabel.TabIndex = 4;
@@ -91,7 +92,7 @@
             // 
             this.totalPriceLabel.AutoSize = true;
             this.totalPriceLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.totalPriceLabel.Location = new System.Drawing.Point(12, 462);
+            this.totalPriceLabel.Location = new System.Drawing.Point(12, 483);
             this.totalPriceLabel.Name = "totalPriceLabel";
             this.totalPriceLabel.Size = new System.Drawing.Size(248, 30);
             this.totalPriceLabel.TabIndex = 5;
@@ -119,11 +120,22 @@
             this.recipeInstructionsTextBox.TabIndex = 7;
             this.recipeInstructionsTextBox.Text = "";
             // 
+            // removeRecipeButton
+            // 
+            this.removeRecipeButton.Location = new System.Drawing.Point(397, 553);
+            this.removeRecipeButton.Name = "removeRecipeButton";
+            this.removeRecipeButton.Size = new System.Drawing.Size(295, 44);
+            this.removeRecipeButton.TabIndex = 8;
+            this.removeRecipeButton.Text = "Tarifi Sil";
+            this.removeRecipeButton.UseVisualStyleBackColor = true;
+            this.removeRecipeButton.Click += new System.EventHandler(this.removeRecipeButton_Click);
+            // 
             // showRecipeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(725, 570);
+            this.ClientSize = new System.Drawing.Size(725, 618);
+            this.Controls.Add(this.removeRecipeButton);
             this.Controls.Add(this.recipeInstructionsTextBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.totalPriceLabel);
@@ -155,5 +167,6 @@
         private System.Windows.Forms.Label totalPriceLabel;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RichTextBox recipeInstructionsTextBox;
+        private System.Windows.Forms.Button removeRecipeButton;
     }
 }

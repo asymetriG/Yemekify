@@ -15,6 +15,8 @@ namespace Yemekify
         public string Talimatlar { get; set; }
         public byte[] imageBytes { get; set; }
 
+        public bool HasMissingIngredients;
+
         public Tarif(int tarifID, string tarifAdi, string kategori, string hazirlamaSuresi, string talimatlar, byte[] imageBytes)
         {
             TarifID = tarifID;

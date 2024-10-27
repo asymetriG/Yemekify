@@ -203,5 +203,8 @@
   <ItemGroup>
     <None Include="Resources\selectimg.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="fakeRecipeImages\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

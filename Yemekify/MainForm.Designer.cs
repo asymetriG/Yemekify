@@ -45,12 +45,15 @@ namespace Yemekify
             this.removeIngredient = new System.Windows.Forms.Button();
             this.addIngredient = new System.Windows.Forms.Button();
             this.depotEvents = new System.Windows.Forms.Button();
+            this.malzemeyeGoreArama = new System.Windows.Forms.Button();
+            this.ingredientsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.topPanel = new System.Windows.Forms.Panel();
             this.filterButton = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.PictureBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.searchBar = new System.Windows.Forms.TextBox();
             this.recipesPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.filterCbox = new System.Windows.Forms.ComboBox();
             this.sidePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.recipePanel.SuspendLayout();
@@ -80,6 +83,8 @@ namespace Yemekify
             this.sidePanel.Controls.Add(this.pictureBox1);
             this.sidePanel.Controls.Add(this.recipePanel);
             this.sidePanel.Controls.Add(this.depotPanel);
+            this.sidePanel.Controls.Add(this.malzemeyeGoreArama);
+            this.sidePanel.Controls.Add(this.ingredientsPanel);
             this.sidePanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.sidePanel.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.sidePanel.Location = new System.Drawing.Point(0, 0);
@@ -228,25 +233,48 @@ namespace Yemekify
             this.depotEvents.UseVisualStyleBackColor = false;
             this.depotEvents.Click += new System.EventHandler(this.depotEvents_Click);
             // 
+            // malzemeyeGoreArama
+            // 
+            this.malzemeyeGoreArama.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(173)))), ((int)(((byte)(96)))));
+            this.malzemeyeGoreArama.FlatAppearance.BorderSize = 0;
+            this.malzemeyeGoreArama.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.malzemeyeGoreArama.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.malzemeyeGoreArama.ForeColor = System.Drawing.Color.Black;
+            this.malzemeyeGoreArama.Location = new System.Drawing.Point(3, 226);
+            this.malzemeyeGoreArama.Name = "malzemeyeGoreArama";
+            this.malzemeyeGoreArama.Size = new System.Drawing.Size(201, 55);
+            this.malzemeyeGoreArama.TabIndex = 9;
+            this.malzemeyeGoreArama.Text = "Malzemeye Göre Arama";
+            this.malzemeyeGoreArama.UseVisualStyleBackColor = false;
+            // 
+            // ingredientsPanel
+            // 
+            this.ingredientsPanel.AutoScroll = true;
+            this.ingredientsPanel.Location = new System.Drawing.Point(3, 287);
+            this.ingredientsPanel.Name = "ingredientsPanel";
+            this.ingredientsPanel.Size = new System.Drawing.Size(203, 218);
+            this.ingredientsPanel.TabIndex = 3;
+            // 
             // topPanel
             // 
             this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(238)))), ((int)(((byte)(173)))));
+            this.topPanel.Controls.Add(this.filterCbox);
             this.topPanel.Controls.Add(this.filterButton);
             this.topPanel.Controls.Add(this.label1);
             this.topPanel.Controls.Add(this.searchButton);
-            this.topPanel.Controls.Add(this.textBox1);
+            this.topPanel.Controls.Add(this.searchBar);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.topPanel.Location = new System.Drawing.Point(206, 0);
             this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(767, 100);
+            this.topPanel.Size = new System.Drawing.Size(767, 134);
             this.topPanel.TabIndex = 1;
             // 
             // filterButton
             // 
             this.filterButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.filterButton.Image = global::Yemekify.Properties.Resources.filter_26;
-            this.filterButton.Location = new System.Drawing.Point(438, 33);
+            this.filterButton.Location = new System.Drawing.Point(437, 43);
             this.filterButton.Name = "filterButton";
             this.filterButton.Size = new System.Drawing.Size(33, 36);
             this.filterButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -258,7 +286,7 @@ namespace Yemekify
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label1.Location = new System.Drawing.Point(13, 29);
+            this.label1.Location = new System.Drawing.Point(12, 39);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(144, 40);
             this.label1.TabIndex = 1;
@@ -268,7 +296,7 @@ namespace Yemekify
             // 
             this.searchButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.searchButton.Image = global::Yemekify.Properties.Resources.magnifier_26;
-            this.searchButton.Location = new System.Drawing.Point(399, 33);
+            this.searchButton.Location = new System.Drawing.Point(398, 43);
             this.searchButton.Name = "searchButton";
             this.searchButton.Size = new System.Drawing.Size(33, 36);
             this.searchButton.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -276,25 +304,42 @@ namespace Yemekify
             this.searchButton.TabStop = false;
             this.searchButton.Click += new System.EventHandler(this.searchButton_Click);
             // 
-            // textBox1
+            // searchBar
             // 
-            this.textBox1.BackColor = System.Drawing.Color.Orange;
-            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.textBox1.Location = new System.Drawing.Point(163, 32);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(230, 37);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.searchBar.BackColor = System.Drawing.Color.Orange;
+            this.searchBar.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.searchBar.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.searchBar.Location = new System.Drawing.Point(162, 42);
+            this.searchBar.Name = "searchBar";
+            this.searchBar.Size = new System.Drawing.Size(230, 37);
+            this.searchBar.TabIndex = 0;
+            this.searchBar.TextChanged += new System.EventHandler(this.searchBar_TextChanged);
             // 
             // recipesPanel
             // 
             this.recipesPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.recipesPanel.Location = new System.Drawing.Point(206, 100);
+            this.recipesPanel.Location = new System.Drawing.Point(206, 134);
             this.recipesPanel.Name = "recipesPanel";
-            this.recipesPanel.Size = new System.Drawing.Size(767, 579);
+            this.recipesPanel.Size = new System.Drawing.Size(767, 545);
             this.recipesPanel.TabIndex = 2;
             this.recipesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.recipesPanel_Paint);
+            // 
+            // filterCbox
+            // 
+            this.filterCbox.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.filterCbox.FormattingEnabled = true;
+            this.filterCbox.Items.AddRange(new object[] {
+            "Fiyata Göre Artan",
+            "Fiyata Göre Azalan",
+            "İsme Göre (A-Z)",
+            "İsme Göre (Z-A)",
+            "Hazırlama Süresine Göre",
+            "Kategoriye Göre"});
+            this.filterCbox.Location = new System.Drawing.Point(477, 43);
+            this.filterCbox.Name = "filterCbox";
+            this.filterCbox.Size = new System.Drawing.Size(223, 33);
+            this.filterCbox.TabIndex = 3;
+            this.filterCbox.SelectedIndexChanged += new System.EventHandler(this.filterCbox_SelectedIndexChanged);
             // 
             // MainForm
             // 
@@ -337,11 +382,14 @@ namespace Yemekify
         private Button removeIngredient;
         private Button addIngredient;
         private FlowLayoutPanel recipesPanel;
-        private TextBox textBox1;
+        private TextBox searchBar;
         private PictureBox searchButton;
         private Label label1;
         private PictureBox filterButton;
         private Button depotEvents;
+        private FlowLayoutPanel ingredientsPanel;
+        private Button malzemeyeGoreArama;
+        private ComboBox filterCbox;
     }
 }
 

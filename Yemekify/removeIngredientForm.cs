@@ -99,6 +99,7 @@ namespace Yemekify
                             reader["MalzemeBirim"],
                             reader["BirimFiyat"]
                         );
+
                         int MalzemeId = Convert.ToInt32(reader["MalzemeId"]);
                         string MalzemeAdi = (string)reader["MalzemeAdi"];
                         string ToplamMiktar = (string)reader["ToplamMiktar"];
@@ -108,6 +109,7 @@ namespace Yemekify
                         Malzeme malzeme = new Malzeme(MalzemeId, MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat);
                         allIngredients.Add(malzeme);
                         currentIngredients.Add(malzeme);
+
                     }
                 }
                 catch (Exception ex)
@@ -148,7 +150,7 @@ namespace Yemekify
                 int malzemeId = Convert.ToInt32(selectedRow.Cells["MalzemeId"].Value);
                 decimal mevcutMiktar = Convert.ToDecimal(selectedRow.Cells["ToplamMiktar"].Value);
 
-                // Girilen ekleme miktarını al
+                // Girilen çıkarılacak miktarı al
                 decimal silinecekMiktar = 0;
                 if (!decimal.TryParse(toBeAddedAmountTextBox.Text, out silinecekMiktar) || silinecekMiktar <= 0)
                 {
@@ -156,9 +158,16 @@ namespace Yemekify
                     return;
                 }
 
+                // Miktarın 0'dan düşük olmaması için kontrol
+                if (silinecekMiktar > mevcutMiktar)
+                {
+                    MessageBox.Show("Çıkarılacak miktar mevcut miktardan fazla olamaz.");
+                    return;
+                }
+
                 // Yeni miktarı hesapla
                 decimal yeniMiktar = mevcutMiktar - silinecekMiktar;
-                ;
+
                 string query = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeId = @MalzemeId";
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -169,18 +178,18 @@ namespace Yemekify
 
                         using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            // Parametreleri ekle
+                            
                             command.Parameters.AddWithValue("@YeniMiktar", yeniMiktar);
                             command.Parameters.AddWithValue("@MalzemeId", malzemeId);
 
-                            // Güncelleme işlemini yap
+                            
                             command.ExecuteNonQuery();
                         }
 
-                        // Kullanıcıya başarı mesajı göster
+                        
                         MessageBox.Show("Malzeme miktarı başarıyla güncellendi.");
 
-                        // dataGridView1'deki ToplamMiktar hücresini de güncelle
+                        
                         selectedRow.Cells["ToplamMiktar"].Value = yeniMiktar;
                     }
                     catch (Exception ex)
@@ -191,8 +200,9 @@ namespace Yemekify
             }
             else
             {
-                MessageBox.Show("Lütfen eklemek istediğiniz malzemeyi seçin.");
+                MessageBox.Show("Lütfen çıkarmak istediğiniz malzemeyi seçin.");
             }
         }
+
     }
 }
