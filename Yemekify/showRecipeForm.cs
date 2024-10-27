@@ -85,7 +85,6 @@ namespace Yemekify
         {
             string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
 
-            
             DialogResult dialogResult = MessageBox.Show("Bu tarifi silmek istediğinize emin misiniz?", "Tarifi Sil", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
             {
@@ -95,7 +94,9 @@ namespace Yemekify
                     {
                         connection.Open();
 
-                        // 1. Tarifte kullanılan malzemeleri al ve stoklarına geri ekle
+                        // 1. Malzeme bilgilerini geçici bir listeye al
+                        List<(int MalzemeID, float MalzemeMiktar, float MevcutMiktar)> malzemeListesi = new List<(int, float, float)>();
+
                         string selectIngredientsQuery = @"
                     SELECT tm.MalzemeID, tm.MalzemeMiktar, m.ToplamMiktar
                     FROM TarifMalzeme tm
@@ -113,22 +114,25 @@ namespace Yemekify
                                 int malzemeId = Convert.ToInt32(reader["MalzemeID"]);
                                 float malzemeMiktar = float.Parse(reader["MalzemeMiktar"].ToString());
                                 float mevcutMiktar = float.Parse(reader["ToplamMiktar"].ToString());
-
-                                
-                                string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeID = @MalzemeID";
-                                using (SqlCommand updateCommand = new SqlCommand(updateStockQuery, connection))
-                                {
-                                    float yeniMiktar = mevcutMiktar + malzemeMiktar;
-                                    updateCommand.Parameters.AddWithValue("@YeniMiktar", yeniMiktar);
-                                    updateCommand.Parameters.AddWithValue("@MalzemeID", malzemeId);
-
-                                    updateCommand.ExecuteNonQuery();
-                                }
+                                malzemeListesi.Add((malzemeId, malzemeMiktar, mevcutMiktar));
                             }
                             reader.Close();
                         }
 
-                        
+                        // 2. Malzeme miktarlarını güncelle
+                        foreach (var malzeme in malzemeListesi)
+                        {
+                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeID = @MalzemeID";
+                            using (SqlCommand updateCommand = new SqlCommand(updateStockQuery, connection))
+                            {
+                                float yeniMiktar = malzeme.MevcutMiktar + malzeme.MalzemeMiktar;
+                                updateCommand.Parameters.AddWithValue("@YeniMiktar", yeniMiktar);
+                                updateCommand.Parameters.AddWithValue("@MalzemeID", malzeme.MalzemeID);
+                                updateCommand.ExecuteNonQuery();
+                            }
+                        }
+
+                        // 3. TarifMalzeme tablosundan tarif bilgilerini sil
                         string deleteIngredientsQuery = "DELETE FROM TarifMalzeme WHERE TarifID = @TarifID";
                         using (SqlCommand deleteIngredientsCommand = new SqlCommand(deleteIngredientsQuery, connection))
                         {
@@ -136,7 +140,7 @@ namespace Yemekify
                             deleteIngredientsCommand.ExecuteNonQuery();
                         }
 
-                        
+                        // 4. Tarifler tablosundan tarifi sil
                         string deleteRecipeQuery = "DELETE FROM Tarifler WHERE TarifID = @TarifID";
                         using (SqlCommand deleteRecipeCommand = new SqlCommand(deleteRecipeQuery, connection))
                         {
@@ -144,7 +148,6 @@ namespace Yemekify
                             deleteRecipeCommand.ExecuteNonQuery();
                         }
 
-                        
                         MessageBox.Show("Tarif ve malzemeleri başarıyla silindi. Malzemeler stoğa geri eklendi.");
 
                         // Formu kapat
@@ -158,10 +161,10 @@ namespace Yemekify
             }
             else if (dialogResult == DialogResult.No)
             {
-                // Kullanıcı silme işlemini iptal etti
                 MessageBox.Show("Silme işlemi iptal edildi.");
             }
         }
+
 
     }
 }
