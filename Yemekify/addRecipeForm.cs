@@ -199,7 +199,7 @@ namespace Yemekify
                             MessageBox.Show("İkinci Section Bitti");
 
                             // Eğer malzeme başarılı bir şekilde eklendiyse stoktan düşüyoruz
-                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @EklenenMiktar WHERE MalzemeID = @MalzemeID";
+                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = CAST(ToplamMiktar AS FLOAT) - @EklenenMiktar WHERE MalzemeID = @MalzemeID";
                             using (SqlCommand updateStockCommand = new SqlCommand(updateStockQuery, connection))
                             {
 

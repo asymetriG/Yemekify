@@ -87,11 +87,12 @@ namespace Yemekify
                         int tarifID = tarifEntry.Key;
                         var tarifIngredients = tarifEntry.Value;
 
+                        // Seçilen malzemeler arasından tarifte olanları bul
                         int matchingIngredientsCount = ingredients.Count(ing => tarifIngredients.Contains(ing.MalzemeID));
-                        int totalIngredientsCount = tarifIngredients.Count;
-                        double matchingPercentage = (double)matchingIngredientsCount / totalIngredientsCount * 100;
+                        int selectedIngredientsCount = ingredients.Count; // Seçili malzeme sayısı
+                        double matchingPercentage = (double)matchingIngredientsCount / selectedIngredientsCount * 100;
 
-                        bool hasMissingIngredients = matchingIngredientsCount < ingredients.Count;
+                        bool hasMissingIngredients = matchingIngredientsCount < selectedIngredientsCount;
 
                         SqlCommand tarifDetailsCommand = new SqlCommand("SELECT * FROM Tarifler WHERE TarifID = @TarifID", connection);
                         tarifDetailsCommand.Parameters.AddWithValue("@TarifID", tarifID);
@@ -110,7 +111,7 @@ namespace Yemekify
                                 );
 
                                 tarif.HasMissingIngredients = hasMissingIngredients;
-                                tarif.MatchingPercentage = matchingPercentage; // Eşleşme yüzdesini atadık
+                                tarif.MatchingPercentage = matchingPercentage; // Güncellenmiş eşleşme yüzdesini atadık
                                 tarifler.Add(tarif);
                             }
                         }
@@ -123,6 +124,7 @@ namespace Yemekify
             }
             return tarifler;
         }
+
 
 
 

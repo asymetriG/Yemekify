@@ -48,12 +48,12 @@ namespace Yemekify
             this.malzemeyeGoreArama = new System.Windows.Forms.Button();
             this.ingredientsPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.topPanel = new System.Windows.Forms.Panel();
+            this.filterCbox = new System.Windows.Forms.ComboBox();
             this.filterButton = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.searchButton = new System.Windows.Forms.PictureBox();
             this.searchBar = new System.Windows.Forms.TextBox();
             this.recipesPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.filterCbox = new System.Windows.Forms.ComboBox();
             this.sidePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.recipePanel.SuspendLayout();
@@ -270,6 +270,23 @@ namespace Yemekify
             this.topPanel.Size = new System.Drawing.Size(767, 134);
             this.topPanel.TabIndex = 1;
             // 
+            // filterCbox
+            // 
+            this.filterCbox.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.filterCbox.FormattingEnabled = true;
+            this.filterCbox.Items.AddRange(new object[] {
+            "Fiyata Göre Artan",
+            "Fiyata Göre Azalan",
+            "İsme Göre (A-Z)",
+            "İsme Göre (Z-A)",
+            "Hazırlama Süresine Göre",
+            "Kategoriye Göre"});
+            this.filterCbox.Location = new System.Drawing.Point(477, 43);
+            this.filterCbox.Name = "filterCbox";
+            this.filterCbox.Size = new System.Drawing.Size(223, 33);
+            this.filterCbox.TabIndex = 3;
+            this.filterCbox.SelectedIndexChanged += new System.EventHandler(this.filterCbox_SelectedIndexChanged);
+            // 
             // filterButton
             // 
             this.filterButton.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -324,23 +341,6 @@ namespace Yemekify
             this.recipesPanel.TabIndex = 2;
             this.recipesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.recipesPanel_Paint);
             // 
-            // filterCbox
-            // 
-            this.filterCbox.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.filterCbox.FormattingEnabled = true;
-            this.filterCbox.Items.AddRange(new object[] {
-            "Fiyata Göre Artan",
-            "Fiyata Göre Azalan",
-            "İsme Göre (A-Z)",
-            "İsme Göre (Z-A)",
-            "Hazırlama Süresine Göre",
-            "Kategoriye Göre"});
-            this.filterCbox.Location = new System.Drawing.Point(477, 43);
-            this.filterCbox.Name = "filterCbox";
-            this.filterCbox.Size = new System.Drawing.Size(223, 33);
-            this.filterCbox.TabIndex = 3;
-            this.filterCbox.SelectedIndexChanged += new System.EventHandler(this.filterCbox_SelectedIndexChanged);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -355,6 +355,7 @@ namespace Yemekify
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "s";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MainForm_MouseClick);
             this.sidePanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.recipePanel.ResumeLayout(false);
