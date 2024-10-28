@@ -27,7 +27,6 @@ namespace Yemekify
         public string fromWhere = "nothing";
         public string currentTarifId;
 
-        private bool isPageChanged = false;
         public string imageLocation = "";
 
         float olusanFiyat = 0;
@@ -37,7 +36,6 @@ namespace Yemekify
 
         private void addIngredient_Click(object sender, EventArgs e)
         {
-            isPageChanged = true;
             addIngredint ai = new addIngredint();
             ai.Show();
 
@@ -49,7 +47,6 @@ namespace Yemekify
             string kategori = categoryCbox.Text;
             int hazirlanmaSuresi = int.Parse(prepareTime.Text);
             string tarifYapilis = recipeTextBox.Text;
-
             byte[] imageBytes = ImageToByteArray(selectedImage.Image);
 
             string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
@@ -60,12 +57,24 @@ namespace Yemekify
                 {
                     connection.Open();
 
+                    string checkQuery = "SELECT COUNT(*) FROM Tarifler WHERE TarifAdi = @TarifAdi";
+                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@TarifAdi", tarifAdi);
+                        int count = (int)checkCommand.ExecuteScalar();
+
+                        if (count > 0 && fromWhere.Equals("fromAddRecipe")) 
+                        {
+                            MessageBox.Show("Bu tarif zaten mevcut. Farklı bir tarif adı deneyin.", "Tarif Mevcut", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
                     if (fromWhere.Equals("fromAddRecipe"))
                     {
-                        // INSERT işlemi
-                        string insertRecipeQuery = "INSERT INTO Tarifler (TarifAdi, Kategori, HazirlamaSuresi, Talimatlar, TarifResmi) VALUES (@TarifAdi, @Kategori, @HazirlamaSuresi, @Talimatlar, @TarifResmi); SELECT SCOPE_IDENTITY();";
+                        string insq = "INSERT INTO Tarifler (TarifAdi, Kategori, HazirlamaSuresi, Talimatlar, TarifResmi) VALUES (@TarifAdi, @Kategori, @HazirlamaSuresi, @Talimatlar, @TarifResmi); SELECT SCOPE_IDENTITY();";
 
-                        using (SqlCommand command = new SqlCommand(insertRecipeQuery, connection))
+                        using (SqlCommand command = new SqlCommand(insq, connection))
                         {
                             command.Parameters.AddWithValue("@TarifAdi", tarifAdi);
                             command.Parameters.AddWithValue("@Kategori", kategori);
@@ -75,16 +84,14 @@ namespace Yemekify
 
                             int tarifID = Convert.ToInt32(command.ExecuteScalar());
 
-                            // Malzemeleri ekleme işlemi
                             AddOrUpdateIngredients(tarifID);
                         }
                     }
                     else if (fromWhere.Equals("update"))
                     {
-                        // UPDATE işlemi
-                        string updateRecipeQuery = "UPDATE Tarifler SET TarifAdi = @TarifAdi, Kategori = @Kategori, HazirlamaSuresi = @HazirlamaSuresi, Talimatlar = @Talimatlar, TarifResmi = @TarifResmi WHERE TarifID = @TarifID";
+                        string updq = "UPDATE Tarifler SET TarifAdi = @TarifAdi, Kategori = @Kategori, HazirlamaSuresi = @HazirlamaSuresi, Talimatlar = @Talimatlar, TarifResmi = @TarifResmi WHERE TarifID = @TarifID";
 
-                        using (SqlCommand command = new SqlCommand(updateRecipeQuery, connection))
+                        using (SqlCommand command = new SqlCommand(updq, connection))
                         {
                             command.Parameters.AddWithValue("@TarifAdi", tarifAdi);
                             command.Parameters.AddWithValue("@Kategori", kategori);
@@ -95,16 +102,14 @@ namespace Yemekify
 
                             command.ExecuteNonQuery();
 
-                            // Mevcut malzemeleri sil ve yenilerini ekle
-                            string deleteIngredientsQuery = "DELETE FROM TarifMalzeme WHERE TarifID = @TarifID";
+                            string deleteQ = "DELETE FROM TarifMalzeme WHERE TarifID = @TarifID";
 
-                            using (SqlCommand deleteCommand = new SqlCommand(deleteIngredientsQuery, connection))
+                            using (SqlCommand deleteCommand = new SqlCommand(deleteQ, connection))
                             {
                                 deleteCommand.Parameters.AddWithValue("@TarifID", currentTarifId);
                                 deleteCommand.ExecuteNonQuery();
                             }
 
-                            // Malzemeleri yeniden ekleme işlemi
                             AddOrUpdateIngredients(Convert.ToInt32(currentTarifId));
                         }
                     }
@@ -117,6 +122,7 @@ namespace Yemekify
                 }
             }
         }
+
 
         private void AddOrUpdateIngredients(int tarifID)
         {
@@ -135,7 +141,6 @@ namespace Yemekify
                         string malzemeBirim = addedIngredientsGridView.Rows[i].Cells["addedMalzemeBirim"].Value?.ToString() ?? string.Empty;
                         string eklenenMiktarStr = addedIngredientsGridView.Rows[i].Cells["addedEklenenMiktar"].Value?.ToString() ?? string.Empty;
 
-                        MessageBox.Show(malzemeBirim + " " + malzemeId + " " + eklenenMiktarStr);
 
                         if (!string.IsNullOrEmpty(malzemeId) && !string.IsNullOrEmpty(eklenenMiktarStr))
                         {
@@ -147,10 +152,9 @@ namespace Yemekify
                                 eklenenMiktarToBeChecked /= 1000;
                             }
 
-                            // ToplamMiktar'ı veritabanından alıyoruz
-                            string checkQuantityQuery = "SELECT ToplamMiktar FROM Malzemeler WHERE MalzemeID = @MalzemeID";
+                            string miktarQ = "SELECT ToplamMiktar FROM Malzemeler WHERE MalzemeID = @MalzemeID";
 
-                            using (SqlCommand checkCommand = new SqlCommand(checkQuantityQuery, connection))
+                            using (SqlCommand checkCommand = new SqlCommand(miktarQ, connection))
                             {
                                 checkCommand.Parameters.AddWithValue("@MalzemeID", malzemeId);
 
@@ -162,15 +166,13 @@ namespace Yemekify
 
                                     if (eklenenMiktarToBeChecked > mevcutMiktar)
                                     {
-                                        MessageBox.Show($"Yetersiz stok: {mevcutMiktar} birim mevcut, {eklenenMiktarToBeChecked} birim eklenmek isteniyor.");
-                                        continue;
+                                        MessageBox.Show($"Yetersiz stok: {mevcutMiktar} birim mevcut.");
+                                        return;
                                     }
                                 }
 
                                 reader.Close();
                             }
-
-                            MessageBox.Show("İlk Section Bitti");
                             
 
                             string eklenenMiktarToDb = "";
@@ -184,9 +186,9 @@ namespace Yemekify
                                 eklenenMiktarToDb = eklenenMiktar.ToString();
                             }
 
-                            string insertIngredientQuery = "INSERT INTO TarifMalzeme (TarifID, MalzemeID, MalzemeMiktar) VALUES (@TarifID, @MalzemeID, @MalzemeMiktar)";
+                            string insertQ = "INSERT INTO TarifMalzeme (TarifID, MalzemeID, MalzemeMiktar) VALUES (@TarifID, @MalzemeID, @MalzemeMiktar)";
                             
-                            using (SqlCommand ingredientCommand = new SqlCommand(insertIngredientQuery, connection))
+                            using (SqlCommand ingredientCommand = new SqlCommand(insertQ, connection))
                             {
                                 
                                 ingredientCommand.Parameters.AddWithValue("@TarifID", tarifID);
@@ -196,11 +198,9 @@ namespace Yemekify
                                 ingredientCommand.ExecuteNonQuery();
                             }
 
-                            MessageBox.Show("İkinci Section Bitti");
 
-                            // Eğer malzeme başarılı bir şekilde eklendiyse stoktan düşüyoruz
-                            string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = CAST(ToplamMiktar AS FLOAT) - @EklenenMiktar WHERE MalzemeID = @MalzemeID";
-                            using (SqlCommand updateStockCommand = new SqlCommand(updateStockQuery, connection))
+                            string updateQ = "UPDATE Malzemeler SET ToplamMiktar = CAST(ToplamMiktar AS FLOAT) - @EklenenMiktar WHERE MalzemeID = @MalzemeID";
+                            using (SqlCommand updateStockCommand = new SqlCommand(updateQ, connection))
                             {
 
                                 updateStockCommand.Parameters.AddWithValue("@EklenenMiktar", float.Parse(eklenenMiktarToDb));
@@ -208,13 +208,13 @@ namespace Yemekify
                                 updateStockCommand.ExecuteNonQuery();
                             }
 
-                            MessageBox.Show("Son Section Bitti");
+
                         }
                     }
 
                 } catch (Exception ex)
                 {
-                    MessageBox.Show("HATA FIRLATILDI : " + ex);
+                    MessageBox.Show("HATA : " + ex);
                 }
             }
                 
@@ -265,7 +265,7 @@ namespace Yemekify
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Hata: " + ex.Message);
+                    MessageBox.Show("Hata : " + ex.Message);
                 }
             }
         }
@@ -370,11 +370,6 @@ namespace Yemekify
         }
        
 
-        private void addRecipeForm_MouseClick(object sender, MouseEventArgs e)
-        {
-
-        }
-
 
         private void deleteSelectedIngredient_Click(object sender, EventArgs e)
         {
@@ -399,26 +394,32 @@ namespace Yemekify
             }
             else
             {
-                MessageBox.Show("Lütfen silmek için bir satır seçin.");
+                MessageBox.Show("Satır Seçin!");
             }
         }
 
         private void addIngredientToDown_Click(object sender, EventArgs e)
         {
-            
             if (ingredientsGridView.SelectedRows.Count > 0)
             {
-                
                 DataGridViewRow selectedRow = ingredientsGridView.SelectedRows[0];
 
                 int malzemeId = Convert.ToInt32(selectedRow.Cells["MalzemeId"].Value);
                 string malzemeAdi = selectedRow.Cells["MalzemeAdi"].Value.ToString();
-                string malzemeBirim = selectedRow.Cells["MalzemeBirim"].Value.ToString();
+                string malzemeBirim = typeOfIngredientCbox.Text;
+
+                // Eklenen malzemeleri kontrol et
+                foreach (DataGridViewRow row in addedIngredientsGridView.Rows)
+                {
+                    if (Convert.ToInt32(row.Cells["addedMalzemeId"].Value) == malzemeId)
+                    {
+                        MessageBox.Show("Bu malzeme zaten eklendi. Önce mevcut malzemeyi silin veya düzenleyin.", "Malzeme Zaten Ekli", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
                 float birimFiyat = float.Parse(Convert.ToDecimal(selectedRow.Cells["BirimFiyat"].Value).ToString());
                 float malzemeFiyati = 0;
-                
-
-
 
                 float eklenenMiktar = 0;
                 if (!float.TryParse(amountTextBox.Text, out eklenenMiktar) || eklenenMiktar <= 0)
@@ -426,31 +427,54 @@ namespace Yemekify
                     MessageBox.Show("Lütfen geçerli bir miktar girin.");
                     return;
                 }
-                
+
+                string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string quantityCheck = "SELECT ToplamMiktar FROM Malzemeler WHERE MalzemeID = @MalzemeID";
+                    using (SqlCommand cmd = new SqlCommand(quantityCheck, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@MalzemeID", malzemeId);
+                        float mevcutMiktar = (float)Convert.ToDouble(cmd.ExecuteScalar());
+
+                        float eklenenMiktarKontrol = eklenenMiktar;
+
+                        if (malzemeBirim.Equals("Mililitre") || malzemeBirim.Equals("Gram"))
+                        {
+                            eklenenMiktarKontrol /= 1000;
+                        }
+
+                        if (eklenenMiktarKontrol > mevcutMiktar)
+                        {
+                            MessageBox.Show($"Depoda yetersiz miktar var: Mevcut miktar {mevcutMiktar} {malzemeBirim}.", "Stok Yetersiz", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                }
+
                 if (typeOfIngredientCbox.Text.Equals("Mililitre") || typeOfIngredientCbox.Text.Equals("Gram"))
                 {
                     malzemeFiyati = eklenenMiktar * birimFiyat / 1000;
-                } else
+                }
+                else
                 {
                     malzemeFiyati = eklenenMiktar * birimFiyat;
-
                 }
 
                 olusanFiyat += malzemeFiyati;
-
-
                 totalPriceLabel.Text = olusanFiyat + " PLN";
-
-
-
 
                 addedIngredientsGridView.Rows.Add(malzemeId, malzemeAdi, eklenenMiktar, typeOfIngredientCbox.Text, malzemeFiyati);
             }
             else
             {
-                MessageBox.Show("Lütfen tarif için eklemek istediğiniz malzemeyi seçin.");
+                MessageBox.Show("Lütfen malzemeyi seçin.");
             }
         }
+
+
 
 
         private void ingredientSeachBar_TextChanged(object sender, EventArgs e)
@@ -550,14 +574,5 @@ namespace Yemekify
             }
         }
 
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void totalPriceLabel_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

@@ -33,28 +33,42 @@ namespace Yemekify
                 {
                     connection.Open();
 
-                    // SQL INSERT komutu
-                    string insertIngredientQuery = "INSERT INTO Malzemeler (MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat) VALUES (@MalzemeAdi, @ToplamMiktar, @MalzemeBirim, @BirimFiyat)";
-
-                    using (SqlCommand command = new SqlCommand(insertIngredientQuery, connection))
+                    string checkQuery = "SELECT COUNT(*) FROM Malzemeler WHERE MalzemeAdi = @MalzemeAdi";
+                    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
                     {
-                        // SQL parametreleri
+                        checkCommand.Parameters.AddWithValue("@MalzemeAdi", malzemeAdi);
+                        int count = (int)checkCommand.ExecuteScalar();
+
+                        if (count > 0) 
+                        {
+                            MessageBox.Show("Bu malzeme zaten depoda mevcut. Yeni malzeme eklemek için farklı bir ad kullanın.", "Malzeme Mevcut", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+
+                    string queryy = "INSERT INTO Malzemeler (MalzemeAdi, ToplamMiktar, MalzemeBirim, BirimFiyat) VALUES (@MalzemeAdi, @ToplamMiktar, @MalzemeBirim, @BirimFiyat)";
+                    using (SqlCommand command = new SqlCommand(queryy, connection))
+                    {
                         command.Parameters.AddWithValue("@MalzemeAdi", malzemeAdi);
                         command.Parameters.AddWithValue("@ToplamMiktar", toplamMiktar);
                         command.Parameters.AddWithValue("@MalzemeBirim", malzemeBirim);
                         command.Parameters.AddWithValue("@BirimFiyat", birimFiyat);
                         command.ExecuteNonQuery();
 
-                        MessageBox.Show("Malzeme başarıyla kaydedildi!");
-
+                        MessageBox.Show("Malzeme başarıyla kaydedildi", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Dispose();
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Hata: " + ex.Message);
+                    MessageBox.Show("Hata : " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+
+        private void addNewIngredient_Load(object sender, EventArgs e)
+        {
 
         }
     }

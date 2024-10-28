@@ -71,22 +71,17 @@ namespace Yemekify
             currentIngredients = new List<Malzeme>();
             allIngredients = new List<Malzeme>();
 
-            // SqlConnection kullanarak bağlantı oluştur
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    // Bağlantıyı aç
                     connection.Open();
 
-                    // SqlCommand oluştur
                     SqlCommand command = new SqlCommand(query, connection);
 
-                    // SqlDataReader kullanarak verileri çek
                     SqlDataReader reader = command.ExecuteReader();
 
                     ingredientsGridView.Rows.Clear();
-
 
 
                     while (reader.Read())
@@ -144,13 +139,12 @@ namespace Yemekify
         {
             if (ingredientsGridView.SelectedRows.Count > 0)
             {
-                // Seçili satırdaki verileri al
+
                 DataGridViewRow selectedRow = ingredientsGridView.SelectedRows[0];
 
                 int malzemeId = Convert.ToInt32(selectedRow.Cells["MalzemeId"].Value);
                 decimal mevcutMiktar = Convert.ToDecimal(selectedRow.Cells["ToplamMiktar"].Value);
 
-                // Girilen çıkarılacak miktarı al
                 decimal silinecekMiktar = 0;
                 if (!decimal.TryParse(toBeAddedAmountTextBox.Text, out silinecekMiktar) || silinecekMiktar <= 0)
                 {
@@ -158,14 +152,12 @@ namespace Yemekify
                     return;
                 }
 
-                // Miktarın 0'dan düşük olmaması için kontrol
                 if (silinecekMiktar > mevcutMiktar)
                 {
                     MessageBox.Show("Çıkarılacak miktar mevcut miktardan fazla olamaz.");
                     return;
                 }
 
-                // Yeni miktarı hesapla
                 decimal yeniMiktar = mevcutMiktar - silinecekMiktar;
 
                 string query = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeId = @MalzemeId";

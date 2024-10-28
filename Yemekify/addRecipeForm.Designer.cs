@@ -211,7 +211,6 @@
             this.totalPriceLabel.Size = new System.Drawing.Size(91, 39);
             this.totalPriceLabel.TabIndex = 12;
             this.totalPriceLabel.Text = "0 PLN";
-            this.totalPriceLabel.Click += new System.EventHandler(this.totalPriceLabel_Click);
             // 
             // deleteSelectedIngredient
             // 
@@ -369,7 +368,6 @@
             this.label9.Size = new System.Drawing.Size(223, 39);
             this.label9.TabIndex = 27;
             this.label9.Text = "Toplam Maliyet ";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
             // selectedImage
             // 
@@ -418,7 +416,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Tarif Ekle";
             this.Load += new System.EventHandler(this.addRecipeForm_Load);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.addRecipeForm_MouseClick);
             ((System.ComponentModel.ISupportInitialize)(this.ingredientsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.addedIngredientsGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectedImage)).EndInit();

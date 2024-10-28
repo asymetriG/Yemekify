@@ -29,11 +29,6 @@ namespace Yemekify
         private List<Malzeme> allIngredients = new List<Malzeme>();
 
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void MainForm_Load(object sender, EventArgs e)
         {
             filterCbox.Visible = false;
@@ -47,10 +42,8 @@ namespace Yemekify
 
         private void LoadIngredientsPanel()
         {
-            // ingredientsPanel'i temizle
             ingredientsPanel.Controls.Clear();
 
-            // Malzemeler listesinde her bir malzeme için bir Label ekleyelim
             string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
             string query = "SELECT * FROM Malzemeler";
 
@@ -73,20 +66,17 @@ namespace Yemekify
                         Malzeme malzeme = new Malzeme(MalzemeID, malzemeAdi, ToplamMiktar,MalzemeBirim,BirimFiyat);
                         allIngredients.Add(malzeme);
 
-                        // Yeni bir Label oluştur ve özelliklerini ayarla
                         Label malzemeLabel = new Label
                         {
                             Text = $"{malzemeAdi}",
                             AutoSize = true,
                             Font = new Font("Segoe UI", 10, FontStyle.Regular),
                             Margin = new Padding(10),
-                            BackColor = Color.FromArgb(255, 238, 173) // İlk arka plan rengi kırmızı
+                            BackColor = Color.FromArgb(255, 238, 173) 
                         };
-
-                        // Click olayını bağla
                         malzemeLabel.Click += (s, e) => MalzemeLabel_Click(malzemeLabel);
 
-                        // Label'i ingredientsPanel'e ekle
+
                         ingredientsPanel.Controls.Add(malzemeLabel);
                     }
 
@@ -104,12 +94,10 @@ namespace Yemekify
         {
             string malzemeAdi = clickedLabel.Text;
 
-            // Malzeme listesinde label'daki adı kullanarak ilgili malzemeyi bul
             Malzeme selectedMalzeme = allIngredients.FirstOrDefault(m => m.MalzemeAdi == malzemeAdi);
 
             if (selectedMalzeme != null)
             {
-                // Label'in rengini değiştir ve listeye ekle veya çıkar
                 if (clickedLabel.BackColor == Color.FromArgb(255, 238, 173))
                 {
                     clickedLabel.BackColor = Color.Green;
@@ -144,7 +132,7 @@ namespace Yemekify
                 return;
             } else
             {
-                currentRecipes = dbengine.getRecipeListByIngredients(selectedIngredients);
+                currentRecipes = dbengine.getRecipeListByIngredients(selectedIngredients,allIngredients);
             }
 
 
@@ -225,7 +213,7 @@ namespace Yemekify
                 Panel tarifPanel = new Panel
                 {
                     BorderStyle = BorderStyle.FixedSingle,
-                    Height = 170, // Butonlar için ekstra yükseklik ekledik
+                    Height = 200,
                     Padding = new Padding(10),
                     AutoSize = false,
                     Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal,
@@ -262,12 +250,18 @@ namespace Yemekify
 
                 Label matchingPercentageLabel = new Label
                 {
-                    Text = $"Eşleşme Yüzdesi: {tarif.MatchingPercentage:F2}%", // Yüzdeyi göster
+                    Text = $"Eşleşme Yüzdesi: {tarif.MatchingPercentage:F2}%",
                     AutoSize = true,
                     Font = new Font("Segoe UI", 12)
                 };
 
-                // Tarifi Göster butonu
+                Label missingIngredientsLabel = new Label
+                {
+                    Text = "Eksik Malzemeler: " + string.Join(", ", tarif.MissingIngredients.Select(m => m.MalzemeAdi)),
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12)
+                };
+
                 Button showRecipeButton = new Button
                 {
                     Text = "Tarifi Göster",
@@ -279,7 +273,6 @@ namespace Yemekify
                 };
                 showRecipeButton.Click += ShowRecipeButton_Click;
 
-                // Tarifi Güncelle butonu
                 Button updateRecipeButton = new Button
                 {
                     Text = "Tarifi Güncelle",
@@ -291,37 +284,32 @@ namespace Yemekify
                 };
                 updateRecipeButton.Click += updateRecipeButton_Click;
 
-                // Tüm bileşenleri tarife paneline ekleyelim
                 tarifPanel.Controls.Add(tarifAdiLabel);
                 tarifPanel.Controls.Add(kategoriLabel);
                 tarifPanel.Controls.Add(hazirlanmaSuresiLabel);
                 tarifPanel.Controls.Add(toplamMaliyetLabel);
                 tarifPanel.Controls.Add(matchingPercentageLabel);
+                tarifPanel.Controls.Add(missingIngredientsLabel);
                 tarifPanel.Controls.Add(showRecipeButton);
                 tarifPanel.Controls.Add(updateRecipeButton);
 
-                // Konumları ayarlayalım
                 tarifAdiLabel.Location = new Point(10, 10);
                 kategoriLabel.Location = new Point(10, 40);
                 hazirlanmaSuresiLabel.Location = new Point(10, 70);
                 toplamMaliyetLabel.Location = new Point(10, 100);
                 matchingPercentageLabel.Location = new Point(10, 130);
+                missingIngredientsLabel.Location = new Point(10, 160);
                 showRecipeButton.Location = new Point(tarifPanel.Width - 220, 45);
                 updateRecipeButton.Location = new Point(tarifPanel.Width - 220, 95);
 
-                // Paneli ekleyelim
                 recipesPanel.Controls.Add(tarifPanel);
 
-                // Panel genişliği güncellemesi
                 recipesPanel.Resize += (s, e) =>
                 {
                     tarifPanel.Width = recipesPanel.ClientSize.Width - recipesPanel.Padding.Horizontal;
                 };
             }
         }
-
-        // ShowRecipeButton_Click ve UpdateRecipeButton_Click event metodlarını eklemeyi unutmayın.
-
 
 
 
@@ -331,6 +319,9 @@ namespace Yemekify
             
             string connectionString = "Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True";
             string query = "SELECT * FROM Tarifler";
+
+            allRecipes.Clear();
+            currentRecipes.Clear();
 
             
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -421,12 +412,6 @@ namespace Yemekify
             rif.Show();
         }
 
-        private void recipesPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-    
 
         private void searchBar_TextChanged(object sender, EventArgs e)
         {
@@ -512,12 +497,19 @@ namespace Yemekify
             {
                 toPrice.Enabled = false;
                 fromPrice.Enabled = false;
+                LoadTarifler();
             }
         }
 
         private void toPrice_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            LoadTarifler();
+            LoadIngredientsPanel();
         }
 
         /*Fiyata Göre Artan

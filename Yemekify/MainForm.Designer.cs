@@ -38,7 +38,6 @@ namespace Yemekify
             this.sidePanel = new System.Windows.Forms.FlowLayoutPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.recipePanel = new System.Windows.Forms.Panel();
-            this.removeRecipeButton = new System.Windows.Forms.Button();
             this.addRecipeButton = new System.Windows.Forms.Button();
             this.recipeEventsButton = new System.Windows.Forms.Button();
             this.depotPanel = new System.Windows.Forms.Panel();
@@ -108,33 +107,14 @@ namespace Yemekify
             // 
             // recipePanel
             // 
-            this.recipePanel.Controls.Add(this.removeRecipeButton);
             this.recipePanel.Controls.Add(this.addRecipeButton);
             this.recipePanel.Controls.Add(this.recipeEventsButton);
             this.recipePanel.Location = new System.Drawing.Point(3, 106);
-            this.recipePanel.MaximumSize = new System.Drawing.Size(201, 174);
+            this.recipePanel.MaximumSize = new System.Drawing.Size(201, 126);
             this.recipePanel.MinimumSize = new System.Drawing.Size(201, 54);
             this.recipePanel.Name = "recipePanel";
-            this.recipePanel.Size = new System.Drawing.Size(201, 54);
+            this.recipePanel.Size = new System.Drawing.Size(201, 61);
             this.recipePanel.TabIndex = 4;
-            // 
-            // removeRecipeButton
-            // 
-            this.removeRecipeButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(173)))), ((int)(((byte)(96)))));
-            this.removeRecipeButton.FlatAppearance.BorderSize = 0;
-            this.removeRecipeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.removeRecipeButton.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.removeRecipeButton.ForeColor = System.Drawing.Color.Black;
-            this.removeRecipeButton.Image = global::Yemekify.Properties.Resources.substrct__1_;
-            this.removeRecipeButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.removeRecipeButton.Location = new System.Drawing.Point(0, 109);
-            this.removeRecipeButton.Name = "removeRecipeButton";
-            this.removeRecipeButton.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
-            this.removeRecipeButton.Size = new System.Drawing.Size(201, 62);
-            this.removeRecipeButton.TabIndex = 8;
-            this.removeRecipeButton.Text = "          Tarif Çıkar";
-            this.removeRecipeButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.removeRecipeButton.UseVisualStyleBackColor = false;
             // 
             // addRecipeButton
             // 
@@ -176,7 +156,7 @@ namespace Yemekify
             this.depotPanel.Controls.Add(this.removeIngredient);
             this.depotPanel.Controls.Add(this.addIngredient);
             this.depotPanel.Controls.Add(this.depotEvents);
-            this.depotPanel.Location = new System.Drawing.Point(3, 166);
+            this.depotPanel.Location = new System.Drawing.Point(3, 173);
             this.depotPanel.MaximumSize = new System.Drawing.Size(201, 174);
             this.depotPanel.MinimumSize = new System.Drawing.Size(201, 54);
             this.depotPanel.Name = "depotPanel";
@@ -243,7 +223,7 @@ namespace Yemekify
             this.malzemeyeGoreArama.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.malzemeyeGoreArama.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.malzemeyeGoreArama.ForeColor = System.Drawing.Color.Black;
-            this.malzemeyeGoreArama.Location = new System.Drawing.Point(3, 226);
+            this.malzemeyeGoreArama.Location = new System.Drawing.Point(3, 233);
             this.malzemeyeGoreArama.Name = "malzemeyeGoreArama";
             this.malzemeyeGoreArama.Size = new System.Drawing.Size(201, 55);
             this.malzemeyeGoreArama.TabIndex = 9;
@@ -253,7 +233,7 @@ namespace Yemekify
             // ingredientsPanel
             // 
             this.ingredientsPanel.AutoScroll = true;
-            this.ingredientsPanel.Location = new System.Drawing.Point(3, 287);
+            this.ingredientsPanel.Location = new System.Drawing.Point(3, 294);
             this.ingredientsPanel.Name = "ingredientsPanel";
             this.ingredientsPanel.Size = new System.Drawing.Size(203, 218);
             this.ingredientsPanel.TabIndex = 3;
@@ -372,7 +352,6 @@ namespace Yemekify
             this.recipesPanel.Name = "recipesPanel";
             this.recipesPanel.Size = new System.Drawing.Size(767, 545);
             this.recipesPanel.TabIndex = 2;
-            this.recipesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.recipesPanel_Paint);
             // 
             // MainForm
             // 
@@ -410,7 +389,6 @@ namespace Yemekify
         private PictureBox pictureBox1;
         private Panel recipePanel;
         private Button recipeEventsButton;
-        private Button removeRecipeButton;
         private Button addRecipeButton;
         private Panel depotPanel;
         private Button removeIngredient;

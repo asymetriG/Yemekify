@@ -29,18 +29,14 @@ namespace Yemekify
             currentIngredients = new List<Malzeme>();
             allIngredients = new List<Malzeme>();
 
-            // SqlConnection kullanarak bağlantı oluştur
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
-                    // Bağlantıyı aç
-                    connection.Open();
 
-                    // SqlCommand oluştur
+                    connection.Open();
                     SqlCommand command = new SqlCommand(query, connection);
 
-                    // SqlDataReader kullanarak verileri çek
                     SqlDataReader reader = command.ExecuteReader();
 
                     ingredientsGridView.Rows.Clear();
@@ -56,6 +52,7 @@ namespace Yemekify
                             reader["MalzemeBirim"],
                             reader["BirimFiyat"]
                         );
+
                         int MalzemeId = Convert.ToInt32(reader["MalzemeId"]);
                         string MalzemeAdi = (string)reader["MalzemeAdi"];
                         string ToplamMiktar = (string)reader["ToplamMiktar"];

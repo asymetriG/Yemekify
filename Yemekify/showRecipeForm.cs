@@ -93,8 +93,6 @@ namespace Yemekify
                     try
                     {
                         connection.Open();
-
-                        // 1. Malzeme bilgilerini geçici bir listeye al
                         List<(int MalzemeID, float MalzemeMiktar, float MevcutMiktar)> malzemeListesi = new List<(int, float, float)>();
 
                         string selectIngredientsQuery = @"
@@ -119,7 +117,6 @@ namespace Yemekify
                             reader.Close();
                         }
 
-                        // 2. Malzeme miktarlarını güncelle
                         foreach (var malzeme in malzemeListesi)
                         {
                             string updateStockQuery = "UPDATE Malzemeler SET ToplamMiktar = @YeniMiktar WHERE MalzemeID = @MalzemeID";
@@ -132,7 +129,6 @@ namespace Yemekify
                             }
                         }
 
-                        // 3. TarifMalzeme tablosundan tarif bilgilerini sil
                         string deleteIngredientsQuery = "DELETE FROM TarifMalzeme WHERE TarifID = @TarifID";
                         using (SqlCommand deleteIngredientsCommand = new SqlCommand(deleteIngredientsQuery, connection))
                         {
@@ -140,7 +136,6 @@ namespace Yemekify
                             deleteIngredientsCommand.ExecuteNonQuery();
                         }
 
-                        // 4. Tarifler tablosundan tarifi sil
                         string deleteRecipeQuery = "DELETE FROM Tarifler WHERE TarifID = @TarifID";
                         using (SqlCommand deleteRecipeCommand = new SqlCommand(deleteRecipeQuery, connection))
                         {
@@ -150,7 +145,6 @@ namespace Yemekify
 
                         MessageBox.Show("Tarif ve malzemeleri başarıyla silindi. Malzemeler stoğa geri eklendi.");
 
-                        // Formu kapat
                         this.Close();
                     }
                     catch (Exception ex)

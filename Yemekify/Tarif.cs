@@ -18,6 +18,12 @@ namespace Yemekify
         public bool HasMissingIngredients { get; set; }
         public double MatchingPercentage { get; set; }
 
+        public List<Malzeme> RequiredIngredients { get; set; } = new List<Malzeme>(); 
+
+
+        public List<Malzeme> MissingIngredients { get; set; } = new List<Malzeme>();
+
+
         public Tarif(int tarifID, string tarifAdi, string kategori, string hazirlamaSuresi, string talimatlar, byte[] imageBytes)
         {
             TarifID = tarifID;

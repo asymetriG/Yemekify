@@ -49,16 +49,16 @@ namespace Yemekify
             return null;
         }
 
-        public static List<Tarif> getRecipeListByIngredients(List<Malzeme> ingredients)
+        public static List<Tarif> getRecipeListByIngredients(List<Malzeme> selectedIngredients, List<Malzeme> allIngredients)
         {
             List<Tarif> tarifler = new List<Tarif>();
             HashSet<int> addedTarifIds = new HashSet<int>();
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection("Data Source=DESKTOP-5GMENJ9;Initial Catalog=Yemekify;Integrated Security=True"))
             {
-                string query = @"SELECT t.TarifID, t.TarifAdi, t.Kategori, t.HazirlamaSuresi, t.Talimatlar, t.TarifResmi, tm.MalzemeID
-                         FROM Tarifler t
-                         JOIN TarifMalzeme tm ON t.TarifID = tm.TarifID";
+                string query = "SELECT t.*, tm.MalzemeID, m.MalzemeAdi FROM Tarifler t " +
+                               "LEFT JOIN TarifMalzeme tm ON t.TarifID = tm.TarifID " +
+                               "LEFT JOIN Malzemeler m ON tm.MalzemeID = m.MalzemeID";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -67,54 +67,54 @@ namespace Yemekify
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
-                    Dictionary<int, List<int>> tarifToIngredientsMap = new Dictionary<int, List<int>>();
-
                     while (reader.Read())
                     {
                         int tarifID = (int)reader["TarifID"];
-                        int malzemeID = (int)reader["MalzemeID"];
-
-                        if (!tarifToIngredientsMap.ContainsKey(tarifID))
+                        if (!addedTarifIds.Contains(tarifID))
                         {
-                            tarifToIngredientsMap[tarifID] = new List<int>();
+                            Tarif tarif = new Tarif(
+                                tarifID,
+                                reader["TarifAdi"].ToString(),
+                                reader["Kategori"].ToString(),
+                                reader["HazirlamaSuresi"].ToString(),
+                                reader["Talimatlar"].ToString(),
+                                reader["TarifResmi"] != DBNull.Value ? (byte[])reader["TarifResmi"] : null
+                            );
+
+                            tarifler.Add(tarif);
+                            addedTarifIds.Add(tarifID);
                         }
-                        tarifToIngredientsMap[tarifID].Add(malzemeID);
+
+                        // Eksik malzemeler listesi için:
+                        var currentTarif = tarifler.FirstOrDefault(t => t.TarifID == tarifID);
+                        if (currentTarif != null)
+                        {
+                            int malzemeID = (int)reader["MalzemeID"];
+                            string malzemeAdi = reader["MalzemeAdi"].ToString();
+
+                            currentTarif.RequiredIngredients.Add(new Malzeme(malzemeID, malzemeAdi, "0", "", 0));
+                        }
                     }
                     reader.Close();
 
-                    foreach (var tarifEntry in tarifToIngredientsMap)
+                    // Her tarif için eşleşme yüzdesini hesapla
+                    foreach (var tarif in tarifler)
                     {
-                        int tarifID = tarifEntry.Key;
-                        var tarifIngredients = tarifEntry.Value;
+                        var requiredIngredientIds = tarif.RequiredIngredients.Select(m => m.MalzemeID).ToList();
 
-                        // Seçilen malzemeler arasından tarifte olanları bul
-                        int matchingIngredientsCount = ingredients.Count(ing => tarifIngredients.Contains(ing.MalzemeID));
-                        int selectedIngredientsCount = ingredients.Count; // Seçili malzeme sayısı
-                        double matchingPercentage = (double)matchingIngredientsCount / selectedIngredientsCount * 100;
+                        // Seçili malzemelerin tarifte olanlar ile kesişimi
+                        int matchingIngredients = selectedIngredients.Count(s => requiredIngredientIds.Contains(s.MalzemeID));
+                        int totalRecipeIngredients = requiredIngredientIds.Count;
 
-                        bool hasMissingIngredients = matchingIngredientsCount < selectedIngredientsCount;
+                        tarif.MatchingPercentage = (matchingIngredients / (float)totalRecipeIngredients) * 100;
 
-                        SqlCommand tarifDetailsCommand = new SqlCommand("SELECT * FROM Tarifler WHERE TarifID = @TarifID", connection);
-                        tarifDetailsCommand.Parameters.AddWithValue("@TarifID", tarifID);
+                        // Eksik malzemeleri belirle
+                        tarif.MissingIngredients = tarif.RequiredIngredients
+                            .Where(ingredient => !selectedIngredients.Any(s => s.MalzemeID == ingredient.MalzemeID))
+                            .ToList();
 
-                        using (SqlDataReader tarifReader = tarifDetailsCommand.ExecuteReader())
-                        {
-                            if (tarifReader.Read())
-                            {
-                                Tarif tarif = new Tarif(
-                                    tarifID,
-                                    tarifReader["TarifAdi"].ToString(),
-                                    tarifReader["Kategori"].ToString(),
-                                    tarifReader["HazirlamaSuresi"].ToString(),
-                                    tarifReader["Talimatlar"].ToString(),
-                                    tarifReader["TarifResmi"] != DBNull.Value ? (byte[])tarifReader["TarifResmi"] : null
-                                );
-
-                                tarif.HasMissingIngredients = hasMissingIngredients;
-                                tarif.MatchingPercentage = matchingPercentage; // Güncellenmiş eşleşme yüzdesini atadık
-                                tarifler.Add(tarif);
-                            }
-                        }
+                        // Eksik malzeme varsa HasMissingIngredients true olur
+                        tarif.HasMissingIngredients = tarif.MissingIngredients.Any();
                     }
                 }
                 catch (Exception ex)
@@ -122,10 +122,9 @@ namespace Yemekify
                     MessageBox.Show("Hata: " + ex.Message);
                 }
             }
+
             return tarifler;
         }
-
-
 
 
 
@@ -158,12 +157,12 @@ namespace Yemekify
                     }
                     else
                     {
-                        Console.WriteLine("Belirtilen tarif için maliyet hesaplanamadı.");
+                        Console.WriteLine("Maliyet hesaplanamadı.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Hata: " + ex.Message);
+                    MessageBox.Show("Hata : " + ex.Message);
                 }
             }
             return string.Empty;
