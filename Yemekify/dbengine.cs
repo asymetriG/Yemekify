@@ -85,7 +85,6 @@ namespace Yemekify
                             addedTarifIds.Add(tarifID);
                         }
 
-                        // Eksik malzemeler listesi için:
                         var currentTarif = tarifler.FirstOrDefault(t => t.TarifID == tarifID);
                         if (currentTarif != null)
                         {
@@ -97,23 +96,21 @@ namespace Yemekify
                     }
                     reader.Close();
 
-                    // Her tarif için eşleşme yüzdesini hesapla
                     foreach (var tarif in tarifler)
                     {
                         var requiredIngredientIds = tarif.RequiredIngredients.Select(m => m.MalzemeID).ToList();
 
-                        // Seçili malzemelerin tarifte olanlar ile kesişimi
                         int matchingIngredients = selectedIngredients.Count(s => requiredIngredientIds.Contains(s.MalzemeID));
                         int totalRecipeIngredients = requiredIngredientIds.Count;
 
                         tarif.MatchingPercentage = (matchingIngredients / (float)totalRecipeIngredients) * 100;
 
-                        // Eksik malzemeleri belirle
+
                         tarif.MissingIngredients = tarif.RequiredIngredients
                             .Where(ingredient => !selectedIngredients.Any(s => s.MalzemeID == ingredient.MalzemeID))
                             .ToList();
 
-                        // Eksik malzeme varsa HasMissingIngredients true olur
+
                         tarif.HasMissingIngredients = tarif.MissingIngredients.Any();
                     }
                 }

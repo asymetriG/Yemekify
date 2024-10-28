@@ -352,6 +352,9 @@ namespace Yemekify
                                 prepareTime.Text = reader["HazirlamaSuresi"].ToString();
                                 recipeTextBox.Text = reader["Talimatlar"].ToString();
                                 selectedImage.Image = dbengine.ByteArrayToImage(reader["TarifResmi"] as byte[]);
+
+                                string kategori = reader["Kategori"].ToString();
+                                categoryCbox.SelectedItem = kategori;
                             }
 
                             
@@ -408,7 +411,6 @@ namespace Yemekify
                 string malzemeAdi = selectedRow.Cells["MalzemeAdi"].Value.ToString();
                 string malzemeBirim = typeOfIngredientCbox.Text;
 
-                // Eklenen malzemeleri kontrol et
                 foreach (DataGridViewRow row in addedIngredientsGridView.Rows)
                 {
                     if (Convert.ToInt32(row.Cells["addedMalzemeId"].Value) == malzemeId)
@@ -417,6 +419,7 @@ namespace Yemekify
                         return;
                     }
                 }
+
 
                 float birimFiyat = float.Parse(Convert.ToDecimal(selectedRow.Cells["BirimFiyat"].Value).ToString());
                 float malzemeFiyati = 0;
